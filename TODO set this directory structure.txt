@@ -1,0 +1,40 @@
+stock-predictor/                 ← Project root
+├── auth-service/                ← Microservice #1: user auth (FastAPI + MongoDB)
+│   ├── app/
+│   │   ├── main.py              ← FastAPI entrypoint
+│   │   ├── models.py            ← Pydantic + Motor ODM models
+│   │   ├── routes.py            ← /register, /login, /profile, /watchlist
+│   │   └── dependencies.py      ← JWT & DB connection
+│   ├── Dockerfile
+│   └── requirements.txt
+│
+├── stock-data-service/          ← Microservice #2: live/historical data (FastAPI)
+│   ├── app/
+│   │   ├── main.py              ← FastAPI entrypoint
+│   │   ├── client.py            ← httpx client for external APIs
+│   │   └── routes.py            ← /stock/{symbol}
+│   ├── Dockerfile
+│   └── requirements.txt
+│
+├── model-service/               ← Microservice #3: your GRU predictor
+│   ├── app/
+│   │   ├── main.py              ← FastAPI entrypoint (`/predict`)
+│   │   ├── model_service.py     ← loads model.pth, scaler.pkl, predict()
+│   │   ├── model.pth            ← trained GRU weights
+│   │   └── scaler.pkl           ← fitted MinMaxScaler
+│   ├── Dockerfile
+│   └── requirements.txt
+│
+├── stock-frontend/              ← React frontend
+│   ├── public/
+│   ├── src/
+│   │   ├── components/          ← UI bits (ProtectedRoute, Navbar…)
+│   │   ├── pages/               ← Login.tsx, Register.tsx, Home.tsx, Watchlist.tsx
+│   │   ├── services/            ← axios wrappers for auth, model, stock data
+│   │   └── App.tsx              ← router setup
+│   ├── Dockerfile               ← to build & serve frontend
+│   ├── package.json
+│   └── tailwind.config.js       ← if using Tailwind
+│
+├── docker-compose.yml           ← orchestrates all 4 services + Mongo
+└── README.md                    ← top-level documentation
