@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-import os, httpx
+import os, httpx, time
 
 router = APIRouter(prefix="/stock", tags=["stock"])
 API_KEY = os.getenv("API_KEY")

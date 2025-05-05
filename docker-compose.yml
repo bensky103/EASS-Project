@@ -32,9 +32,27 @@ services:
     command: uvicorn main:app --host 0.0.0.0 --port 8002
 
   model:
-    image: stock-backend:latest   # your previously built model service
+    build:                       # ← use your model Dockerfile
+      context: .
+      dockerfile: app/Dockerfile
+    working_dir: /app            # /app is where main.py lives
+    volumes:
+      - ./app:/app               # hot‑reload code without rebuilds
     ports:
-      - '8000:8000'
+      - "8000:8000"
+    command: uvicorn main:app --host 0.0.0.0 --port 8000
+
+  tests:
+    build:
+      context: .
+      dockerfile: tests/Dockerfile
+    working_dir: /code
+    depends_on:
+      - auth
+      - stock
+      - model
+    # run once, then exit; no need for ports or volumes
+    restart: "no"
 
 volumes:
   mongo_data:
