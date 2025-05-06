@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from routes.stock import router as stock_router
+from stock_service.routes.stock import router as stock_router
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="Stock-Data Service")

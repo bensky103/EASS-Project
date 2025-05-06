@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from typing import List
-from ..models import users
-from ..schemas import UserOut, WatchlistItem, WatchlistOut
-from ..security import decode_token
+from auth_service.models import users
+from auth_service.schemas import UserOut, WatchlistItem, WatchlistOut
+from auth_service.security import decode_token
 
 router = APIRouter(prefix="/user", tags=["user"])
 

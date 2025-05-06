@@ -6,13 +6,9 @@ COMPOSE_FILE = "docker-compose.yml"
 
 @pytest.fixture(scope="session", autouse=True)
 def _stack_up_and_wait():
-    # 1) spin up all services
-    subprocess.run(
-      ["docker", "compose", "-f", COMPOSE_FILE, "up", "--build", "-d"],
-      check=True
-    )
-    # 2) wait for auth:8001 and stock:8002
-    for port in (8001, 8002):
+    
+    # wait for auth:8001 and stock:8002 and app:8000
+    for port in (8001, 8002, 8000):
         for _ in range(30):
             try:
                 s = socket.create_connection(("localhost", port), timeout=1)
@@ -23,9 +19,7 @@ def _stack_up_and_wait():
         else:
             pytest.exit(f"Service on port {port} never became ready")
     yield
-    # 3) optional teardown
-    subprocess.run(["docker", "compose", "-f", COMPOSE_FILE, "down"])
-
+    
 
 # ── 2. sync client (simple tests) ───────────────────────────────────
 @pytest.fixture

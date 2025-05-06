@@ -13,8 +13,11 @@ async def get_stock(symbol: str):
           "symbol": symbol, "resolution":"D", "from": 1600000000, "to": 1700000000, "token": API_KEY
         })
     data = resp.json()
+    print("FINNHUB RESPONSE:", data)
     if data.get("s") != "ok":
-        raise HTTPException(404, f"No data for {symbol}")
+        msg = data.get("s") or data.get("error") or data.get("message")
+        raise HTTPException(404, f"No data for {symbol}: {msg}")
+        
 
     # build list of {date, price}
     result = [
