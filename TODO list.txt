@@ -41,6 +41,7 @@ stock-predictor/                 ← Project root
 ├── docker-compose.yml           ← orchestrates all 4 services + Mongo
 └── README.md                    ← top-level documentation
 
-2. Fix dockerfile requirments.txt installations
+2. Fix dockerfile to use requirments.txt
 3. Set env variables in docker_compose.yml to actually be fetched from a .env file #DONE!
-4. Change finnhub stock service to either Yahoo Finance or Alpha Vantage
+4. Change finnhub stock service to either Yahoo Finance or Alpha Vantage #DONE!
+5. Fix errors presented after docker compose run --rm tests pytest -v

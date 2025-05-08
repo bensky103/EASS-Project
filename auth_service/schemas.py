@@ -1,12 +1,12 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
 from typing import List
 
 class UserIn(BaseModel):
-    email: EmailStr
+    email: str
     password: str
 
 class UserOut(BaseModel):
-    email: EmailStr
+    email: str
 
 class Token(BaseModel):
     access_token: str

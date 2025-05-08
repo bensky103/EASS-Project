@@ -1,7 +1,10 @@
+#docker-compose.yml
+
 services:
 
   mongo:
     image: mongo:6
+    container_name: mongo
     restart: unless-stopped
     ports:
       - "27017:27017"
@@ -9,19 +12,13 @@ services:
       - mongo_data:/data/db
     env_file:
       - .env
-
-  auth:
-    build:
-      context: .
-      dockerfile: auth_service/Dockerfile
-    working_dir: /app
-    volumes:
-      - ./auth_service:/app/auth_service
+  
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    restart: unless-stopped
     ports:
-      - "8001:8001"
-    command: uvicorn auth_service.main:app --host 0.0.0.0 --port 8001
-    depends_on:
-      - mongo
+      - "6379:6379"
     env_file:
       - .env
 
@@ -30,6 +27,7 @@ services:
       context: .
       dockerfile: stock_service/Dockerfile
     working_dir: /app
+    container_name: stock_service
     volumes:
       - ./stock_service:/app/stock_service
     ports:
@@ -37,29 +35,75 @@ services:
     command: uvicorn stock_service.main:app --host 0.0.0.0 --port 8002
     env_file:
       - .env
+    depends_on:
+      - redis
+    healthcheck:
+      test: ["CMD", "python3", "-c",
+             "import sys, urllib.request as r; \
+              sys.exit(0 if r.urlopen('http://localhost:8002/stock/AAPL').getcode()==200 else 1)"]
+      interval: 10s
+      timeout: 2s
+      retries: 3
+
+  auth:
+    build:
+      context: .
+      dockerfile: auth_service/Dockerfile
+    working_dir: /app
+    container_name: auth_service
+    volumes:
+      - ./auth_service:/app/auth_service
+    ports:
+      - "8001:8001"
+    command: uvicorn auth_service.main:app --host 0.0.0.0 --port 8001
+    depends_on:
+      - redis
+      - mongo
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD", "python3", "-c",
+         "import sys, urllib.request as r; \
+          sys.exit(0 if r.urlopen('http://localhost:8001/health').getcode()==200 else 1)"]
+      interval: 5s
+      timeout: 2s
+      retries: 5
+
 
   model:
     build:                       # ← use your model Dockerfile
       context: .
       dockerfile: app/Dockerfile
     working_dir: /app            # /app is where main.py lives
-    volumes:
-      - ./app:/app               # hot‑reload code without rebuilds
+    container_name: model_service
     ports:
       - "8000:8000"
-    command: uvicorn main:app --host 0.0.0.0 --port 8000
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
     env_file:
       - .env
+    depends_on:
+      - redis
+    healthcheck:
+      test: ["CMD", "python3", "-c",
+             "import sys, urllib.request as r; \
+              sys.exit(0 if r.urlopen('http://localhost:8000/health').getcode()==200 else 1)"]
+      interval: 10s
+      timeout: 2s
+      retries: 3
 
   tests:
     build:
       context: .
       dockerfile: tests/Dockerfile
     working_dir: /code
+    container_name: tests
     depends_on:
-      - auth
-      - stock
-      - model
+     auth:
+       condition: service_healthy
+     stock:
+       condition: service_healthy
+     model:
+       condition: service_healthy
     # run once, then exit; no need for ports or volumes
     restart: "no"
     env_file:

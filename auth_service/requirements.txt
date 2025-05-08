@@ -5,3 +5,4 @@ email-validator
 motor
 passlib[bcrypt]
 pyjwt
+redis

@@ -1,4 +1,4 @@
-# tests/Dockerfile  (optimized)
+# tests/Dockerfile 
 FROM python:3.11-slim
 
 WORKDIR /code
@@ -14,6 +14,9 @@ RUN pip install \
         -r auth_requirements.txt \
         -r stock_requirements.txt \
         pytest pytest-asyncio httpx pyjwt
+
+
+ENV PYTHONPATH=/code
 
 # 3) now copy the rest of the repo
 COPY . /code

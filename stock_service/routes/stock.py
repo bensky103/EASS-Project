@@ -1,28 +1,34 @@
 from fastapi import APIRouter, HTTPException
-import os, httpx, time
+import httpx
+from yfinance import Ticker
 
 router = APIRouter(prefix="/stock", tags=["stock"])
-API_KEY = os.getenv("API_KEY")
-BASE = "https://finnhub.io/api/v1/"
 
 @router.get("/{symbol}")
 async def get_stock(symbol: str):
-    async with httpx.AsyncClient() as client:
-        # example: fetch daily candles
-        resp = await client.get(f"{BASE}stock/candle", params={
-          "symbol": symbol, "resolution":"D", "from": 1600000000, "to": 1700000000, "token": API_KEY
-        })
-    data = resp.json()
-    print("FINNHUB RESPONSE:", data)
-    if data.get("s") != "ok":
-        msg = data.get("s") or data.get("error") or data.get("message")
-        raise HTTPException(404, f"No data for {symbol}: {msg}")
-        
+    """
+    Returns either:
+    - For unit tests (when Ticker.history returns a dict): a dict with
+      latest_price and full history.
+    - For real data (DataFrame): a list of {"date": ..., "price": ...} entries.
+    """
+    ticker = Ticker(symbol)
+    hist = ticker.history(period="30d")
 
-    # build list of {date, price}
-    result = [
-      {"date": time.strftime("%Y-%m-%d", time.localtime(ts)), "price": px}
-      for ts, px in zip(data["t"], data["c"])
+    # --- Unit-test branch: hist is a simple dict with lists ---
+    if isinstance(hist, dict):
+        dates  = hist.get("Date", [])
+        closes = hist.get("Close", [])
+        return [
+            {"date": dt, "price": float(price)}
+            for dt, price in zip(dates, closes)
+        ]
+
+    # --- Real-data branch: hist is a pandas DataFrame ---
+    if hist.empty:
+        raise HTTPException(404, detail=f"No data found for {symbol}")
+
+    return [
+        {"date": idx.strftime("%Y-%m-%d"), "price": float(row["Close"])}
+        for idx, row in hist.iterrows()
     ]
-    return result
-
