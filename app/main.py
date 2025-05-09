@@ -33,7 +33,10 @@ async def predict_endpoint(data: PredictionRequest):
     preds = predict_next_10_days(data.stock_symbol)
     last_date = datetime.today()
     formatted_preds = [
-        {"date": d, "predicted_price": float(p)}
+        {
+            "date": d.strftime("%d/%m/%Y"),
+            "predicted_price": round(float(p), 2)
+        }
         for d, p in zip(
             pd.bdate_range(last_date + timedelta(days=1), periods=len(preds)),
             preds
