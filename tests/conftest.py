@@ -5,7 +5,7 @@ import httpx
 COMPOSE_FILE = "docker-compose.yml"
 
 def wait_for_http_service(service: str, port: int, endpoint: str = "/health", timeout: int = 30):
-    base_url = f"http://{service}:{port}"  # Changed to use service name and port correctly
+    base_url = f"http://localhost:{port}"  # Changed to use localhost
     start_time = time.time()
     while True:
         try:
@@ -19,8 +19,7 @@ def wait_for_http_service(service: str, port: int, endpoint: str = "/health", ti
 
 @pytest.fixture(scope="session", autouse=True)
 def _stack_up_and_wait():
-    # Fixed the order of parameters (service name, port)
-    wait_for_http_service("auth", 8001)  # Changed from "auth", 8001 to correct order
+    wait_for_http_service("auth", 8001)
     wait_for_http_service("stock", 8002)
     wait_for_http_service("model", 8000)
     yield
@@ -30,12 +29,12 @@ def _stack_up_and_wait():
 @pytest.fixture
 def http():
     """Synchronous httpx client (handy for simple GET/POST)."""
-    with httpx.Client(base_url="http://auth:8001") as c:
+    with httpx.Client(base_url="http://localhost:8001") as c:
         yield c
 
 
 # ── 3. async client (pytest‑asyncio tests) ──────────────────────────
 @pytest.fixture
 async def ahttp():
-    async with httpx.AsyncClient(base_url="http://auth:8001") as c:
+    async with httpx.AsyncClient(base_url="http://localhost:8001") as c:
         yield c
