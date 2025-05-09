@@ -49,7 +49,13 @@ def predict_next_10_days(symbol):
     processed = preprocess_data(raw_data)
     # Ensure correct shape for LSTM, e.g., (1, timesteps, features)
     input_seq = processed[-60:].reshape(1, 60, 1)
-    preds = model.predict(input_seq)
+    # Convert to PyTorch tensor
+    input_tensor = torch.FloatTensor(input_seq)
+    # Set model to evaluation mode
+    model.eval()
+    # Disable gradient calculation
+    with torch.no_grad():
+        preds = model(input_tensor)
     # Inverse transform if needed
-    preds = scaler.inverse_transform(preds)
+    preds = scaler.inverse_transform(preds.numpy())
     return preds.flatten()
