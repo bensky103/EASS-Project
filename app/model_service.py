@@ -47,15 +47,34 @@ def preprocess_data(raw_data):
 def predict_next_10_days(symbol):
     raw_data = fetch_historical_data(symbol)
     processed = preprocess_data(raw_data)
-    # Ensure correct shape for LSTM, e.g., (1, timesteps, features)
-    input_seq = processed[-60:].reshape(1, 60, 1)
-    # Convert to PyTorch tensor
-    input_tensor = torch.FloatTensor(input_seq)
-    # Set model to evaluation mode
-    model.eval()
-    # Disable gradient calculation
-    with torch.no_grad():
-        preds = model(input_tensor)
-    # Inverse transform if needed
-    preds = scaler.inverse_transform(preds.numpy())
-    return preds.flatten()
+    
+    # Initialize list to store predictions
+    all_predictions = []
+    
+    # Get the last 60 days of data
+    current_sequence = processed[-60:].reshape(1, 60, 1)
+    
+    # Generate 10 predictions
+    for _ in range(10):
+        # Convert to PyTorch tensor
+        input_tensor = torch.FloatTensor(current_sequence)
+        
+        # Set model to evaluation mode
+        model.eval()
+        
+        # Disable gradient calculation
+        with torch.no_grad():
+            pred = model(input_tensor)
+        
+        # Store prediction
+        all_predictions.append(pred.numpy()[0][0])
+        
+        # Update sequence for next prediction
+        current_sequence = np.roll(current_sequence, -1)
+        current_sequence[0, -1, 0] = pred.numpy()[0][0]
+    
+    # Inverse transform all predictions
+    all_predictions = np.array(all_predictions).reshape(-1, 1)
+    all_predictions = scaler.inverse_transform(all_predictions)
+    
+    return all_predictions.flatten()
