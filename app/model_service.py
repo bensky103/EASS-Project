@@ -67,7 +67,7 @@ def predict_next_10_days(symbol):
             pred = model(input_tensor)
         
         # Store prediction
-        all_predictions.append(pred.numpy()[0][0])
+        all_predictions.append(float(pred.numpy()[0][0]))  # Convert to float explicitly
         
         # Update sequence for next prediction
         current_sequence = np.roll(current_sequence, -1)
@@ -77,4 +77,5 @@ def predict_next_10_days(symbol):
     all_predictions = np.array(all_predictions).reshape(-1, 1)
     all_predictions = scaler.inverse_transform(all_predictions)
     
-    return all_predictions.flatten()
+    # Convert to list of floats
+    return [float(x) for x in all_predictions.flatten()]

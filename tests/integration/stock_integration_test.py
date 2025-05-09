@@ -1,6 +1,6 @@
 import httpx, pytest, time
 
-BASE = "http://stock:8002"
+BASE = "http://localhost:8002"
 
 def test_stock_endpoint_live():
     r = httpx.get(f"{BASE}/stock/AAPL")
