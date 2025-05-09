@@ -4,6 +4,8 @@ import torch
 from torch import nn
 import joblib
 import os
+import yfinance as yf
+import pandas as pd
 
 # Define your GRU model class (copy from your notebook)
 class GRUModel(nn.Module):
@@ -30,15 +32,24 @@ scaler_path = os.path.join(os.path.dirname(__file__), "scaler.pkl")
 scaler = joblib.load(scaler_path)
 model = load_model()
 
+def fetch_historical_data(symbol, period="60d", interval="1d"):
+    ticker = yf.Ticker(symbol)
+    hist = ticker.history(period=period, interval=interval)
+    return hist['Close'].values  # or adjust as per your model's needs
+
+def preprocess_data(raw_data):
+    # Reshape if needed, e.g., (-1, 1) for MinMaxScaler
+    data = np.array(raw_data).reshape(-1, 1)
+    scaled = scaler.transform(data)
+    return scaled
+
 # Predict function
-def predict(stock_symbol: str, historical_data: list[float]):
-    x = np.array(historical_data).reshape(1, -1)
-    x_scaled = scaler.transform(x.reshape(-1, 1)).reshape(1, len(historical_data), 1)
-    x_tensor = torch.tensor(x_scaled).float()
-
-    with torch.no_grad():
-        y_pred = model(x_tensor)
-        predicted_price = y_pred.numpy()[0][0]
-        predicted_price = scaler.inverse_transform([[predicted_price]])[0][0]
-
-    return {"predicted_price": float(predicted_price), "confidence": 0.9}
+def predict_next_10_days(symbol):
+    raw_data = fetch_historical_data(symbol)
+    processed = preprocess_data(raw_data)
+    # Ensure correct shape for LSTM, e.g., (1, timesteps, features)
+    input_seq = processed[-60:].reshape(1, 60, 1)
+    preds = model.predict(input_seq)
+    # Inverse transform if needed
+    preds = scaler.inverse_transform(preds)
+    return preds.flatten()
