@@ -6,6 +6,10 @@ from app.model_service import predict_next_10_days
 import redis, os
 from datetime import datetime, timedelta
 import pandas as pd
+from dotenv import load_dotenv
+
+# Load environment variables from .env
+load_dotenv()
 
 redis_client = redis.from_url(os.getenv("REDIS_URL"))
 
