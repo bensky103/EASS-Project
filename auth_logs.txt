@@ -1,0 +1,1176 @@
+auth-1  | Traceback (most recent call last):
+auth-1  |   File "/usr/local/bin/uvicorn", line 8, in <module>
+auth-1  |     sys.exit(main())
+auth-1  |              ^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1161, in __call__
+auth-1  |     return self.main(*args, **kwargs)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1082, in main
+auth-1  |     rv = self.invoke(ctx)
+auth-1  |          ^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1443, in invoke
+auth-1  |     return ctx.invoke(self.callback, **ctx.params)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 788, in invoke
+auth-1  |     return __callback(*args, **kwargs)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/main.py", line 413, in main
+auth-1  |     run(
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/main.py", line 580, in run
+auth-1  |     server.run()
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 66, in run
+auth-1  |     return asyncio.run(self.serve(sockets=sockets))
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/runners.py", line 190, in run
+auth-1  |     return runner.run(main)
+auth-1  |            ^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/runners.py", line 118, in run
+auth-1  |     return self._loop.run_until_complete(task)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/base_events.py", line 654, in run_until_complete
+auth-1  |     return future.result()
+auth-1  |            ^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 70, in serve
+auth-1  |     await self._serve(sockets)
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 77, in _serve
+auth-1  |     config.load()
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/config.py", line 435, in load
+auth-1  |     self.loaded_app = import_from_string(self.app)
+auth-1  |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/importer.py", line 22, in import_from_string
+auth-1  |     raise exc from None
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/importer.py", line 19, in import_from_string
+auth-1  |     module = importlib.import_module(module_str)
+auth-1  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/importlib/__init__.py", line 126, in import_module
+auth-1  |     return _bootstrap._gcd_import(name[level:], package, level)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+auth-1  |   File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+auth-1  |   File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+auth-1  |   File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+auth-1  |   File "<frozen importlib._bootstrap_external>", line 940, in exec_module
+auth-1  |   File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+auth-1  |   File "/app/auth_service/main.py", line 2, in <module>
+auth-1  |     from auth_service.routers.auth import router as auth_router
+auth-1  | ModuleNotFoundError: No module named 'auth_service'
+auth-1  | Traceback (most recent call last):
+auth-1  |   File "/usr/local/bin/uvicorn", line 8, in <module>
+auth-1  |     sys.exit(main())
+auth-1  |              ^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1161, in __call__
+auth-1  |     return self.main(*args, **kwargs)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1082, in main
+auth-1  |     rv = self.invoke(ctx)
+auth-1  |          ^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1443, in invoke
+auth-1  |     return ctx.invoke(self.callback, **ctx.params)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 788, in invoke
+auth-1  |     return __callback(*args, **kwargs)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/main.py", line 413, in main
+auth-1  |     run(
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/main.py", line 580, in run
+auth-1  |     server.run()
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 66, in run
+auth-1  |     return asyncio.run(self.serve(sockets=sockets))
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/runners.py", line 190, in run
+auth-1  |     return runner.run(main)
+auth-1  |            ^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/runners.py", line 118, in run
+auth-1  |     return self._loop.run_until_complete(task)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/base_events.py", line 654, in run_until_complete
+auth-1  |     return future.result()
+auth-1  |            ^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 70, in serve
+auth-1  |     await self._serve(sockets)
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 77, in _serve
+auth-1  |     config.load()
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/config.py", line 435, in load
+auth-1  |     self.loaded_app = import_from_string(self.app)
+auth-1  |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/importer.py", line 22, in import_from_string
+auth-1  |     raise exc from None
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/importer.py", line 19, in import_from_string
+auth-1  |     module = importlib.import_module(module_str)
+auth-1  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/importlib/__init__.py", line 126, in import_module
+auth-1  |     return _bootstrap._gcd_import(name[level:], package, level)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+auth-1  |   File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+auth-1  |   File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+auth-1  |   File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+auth-1  |   File "<frozen importlib._bootstrap_external>", line 940, in exec_module
+auth-1  |   File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+auth-1  |   File "/app/auth_service/main.py", line 2, in <module>
+auth-1  |     from auth_service.routers.auth import router as auth_router
+auth-1  | ModuleNotFoundError: No module named 'auth_service'
+auth-1  | Traceback (most recent call last):
+auth-1  |   File "/usr/local/bin/uvicorn", line 8, in <module>
+auth-1  |     sys.exit(main())
+auth-1  |              ^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1161, in __call__
+auth-1  |     return self.main(*args, **kwargs)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1082, in main
+auth-1  |     rv = self.invoke(ctx)
+auth-1  |          ^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1443, in invoke
+auth-1  |     return ctx.invoke(self.callback, **ctx.params)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 788, in invoke
+auth-1  |     return __callback(*args, **kwargs)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/main.py", line 413, in main
+auth-1  |     run(
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/main.py", line 580, in run
+auth-1  |     server.run()
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 66, in run
+auth-1  |     return asyncio.run(self.serve(sockets=sockets))
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/runners.py", line 190, in run
+auth-1  |     return runner.run(main)
+auth-1  |            ^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/runners.py", line 118, in run
+auth-1  |     return self._loop.run_until_complete(task)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/base_events.py", line 654, in run_until_complete
+auth-1  |     return future.result()
+auth-1  |            ^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 70, in serve
+auth-1  |     await self._serve(sockets)
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 77, in _serve
+auth-1  |     config.load()
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/config.py", line 435, in load
+auth-1  |     self.loaded_app = import_from_string(self.app)
+auth-1  |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/importer.py", line 22, in import_from_string
+auth-1  |     raise exc from None
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/importer.py", line 19, in import_from_string
+auth-1  |     module = importlib.import_module(module_str)
+auth-1  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/importlib/__init__.py", line 126, in import_module
+auth-1  |     return _bootstrap._gcd_import(name[level:], package, level)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+auth-1  |   File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+auth-1  |   File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+auth-1  |   File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+auth-1  |   File "<frozen importlib._bootstrap_external>", line 940, in exec_module
+auth-1  |   File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+auth-1  |   File "/app/auth_service/main.py", line 2, in <module>
+auth-1  |     from auth_service.routers.auth import router as auth_router
+auth-1  | ModuleNotFoundError: No module named 'auth_service'
+auth-1  | Traceback (most recent call last):
+auth-1  |   File "/usr/local/bin/uvicorn", line 8, in <module>
+auth-1  |     sys.exit(main())
+auth-1  |              ^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1161, in __call__
+auth-1  |     return self.main(*args, **kwargs)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1082, in main
+auth-1  |     rv = self.invoke(ctx)
+auth-1  |          ^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1443, in invoke
+auth-1  |     return ctx.invoke(self.callback, **ctx.params)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 788, in invoke
+auth-1  |     return __callback(*args, **kwargs)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/main.py", line 413, in main
+auth-1  |     run(
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/main.py", line 580, in run
+auth-1  |     server.run()
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 66, in run
+auth-1  |     return asyncio.run(self.serve(sockets=sockets))
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/runners.py", line 190, in run
+auth-1  |     return runner.run(main)
+auth-1  |            ^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/runners.py", line 118, in run
+auth-1  |     return self._loop.run_until_complete(task)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/base_events.py", line 654, in run_until_complete
+auth-1  |     return future.result()
+auth-1  |            ^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 70, in serve
+auth-1  |     await self._serve(sockets)
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 77, in _serve
+auth-1  |     config.load()
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/config.py", line 435, in load
+auth-1  |     self.loaded_app = import_from_string(self.app)
+auth-1  |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/importer.py", line 22, in import_from_string
+auth-1  |     raise exc from None
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/importer.py", line 19, in import_from_string
+auth-1  |     module = importlib.import_module(module_str)
+auth-1  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/importlib/__init__.py", line 126, in import_module
+auth-1  |     return _bootstrap._gcd_import(name[level:], package, level)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+auth-1  |   File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+auth-1  |   File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+auth-1  |   File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+auth-1  |   File "<frozen importlib._bootstrap_external>", line 940, in exec_module
+auth-1  |   File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+auth-1  |   File "/app/auth_service/main.py", line 2, in <module>
+auth-1  |     from auth_service.routers.auth import router as auth_router
+auth-1  | ModuleNotFoundError: No module named 'auth_service'
+auth-1  | Traceback (most recent call last):
+auth-1  |   File "/usr/local/bin/uvicorn", line 8, in <module>
+auth-1  |     sys.exit(main())
+auth-1  |              ^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1161, in __call__
+auth-1  |     return self.main(*args, **kwargs)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1082, in main
+auth-1  |     rv = self.invoke(ctx)
+auth-1  |          ^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1443, in invoke
+auth-1  |     return ctx.invoke(self.callback, **ctx.params)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 788, in invoke
+auth-1  |     return __callback(*args, **kwargs)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/main.py", line 413, in main
+auth-1  |     run(
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/main.py", line 580, in run
+auth-1  |     server.run()
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 66, in run
+auth-1  |     return asyncio.run(self.serve(sockets=sockets))
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/runners.py", line 190, in run
+auth-1  |     return runner.run(main)
+auth-1  |            ^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/runners.py", line 118, in run
+auth-1  |     return self._loop.run_until_complete(task)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/base_events.py", line 654, in run_until_complete
+auth-1  |     return future.result()
+auth-1  |            ^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 70, in serve
+auth-1  |     await self._serve(sockets)
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 77, in _serve
+auth-1  |     config.load()
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/config.py", line 435, in load
+auth-1  |     self.loaded_app = import_from_string(self.app)
+auth-1  |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/importer.py", line 22, in import_from_string
+auth-1  |     raise exc from None
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/importer.py", line 19, in import_from_string
+auth-1  |     module = importlib.import_module(module_str)
+auth-1  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/importlib/__init__.py", line 126, in import_module
+auth-1  |     return _bootstrap._gcd_import(name[level:], package, level)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+auth-1  |   File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+auth-1  |   File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+auth-1  |   File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+auth-1  |   File "<frozen importlib._bootstrap_external>", line 940, in exec_module
+auth-1  |   File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+auth-1  |   File "/app/auth_service/main.py", line 2, in <module>
+auth-1  |     from auth_service.routers.auth import router as auth_router
+auth-1  | ModuleNotFoundError: No module named 'auth_service'
+auth-1  | Traceback (most recent call last):
+auth-1  |   File "/usr/local/bin/uvicorn", line 8, in <module>
+auth-1  |     sys.exit(main())
+auth-1  |              ^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1161, in __call__
+auth-1  |     return self.main(*args, **kwargs)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1082, in main
+auth-1  |     rv = self.invoke(ctx)
+auth-1  |          ^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1443, in invoke
+auth-1  |     return ctx.invoke(self.callback, **ctx.params)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 788, in invoke
+auth-1  |     return __callback(*args, **kwargs)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/main.py", line 413, in main
+auth-1  |     run(
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/main.py", line 580, in run
+auth-1  |     server.run()
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 66, in run
+auth-1  |     return asyncio.run(self.serve(sockets=sockets))
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/runners.py", line 190, in run
+auth-1  |     return runner.run(main)
+auth-1  |            ^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/runners.py", line 118, in run
+auth-1  |     return self._loop.run_until_complete(task)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/base_events.py", line 654, in run_until_complete
+auth-1  |     return future.result()
+auth-1  |            ^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 70, in serve
+auth-1  |     await self._serve(sockets)
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 77, in _serve
+auth-1  |     config.load()
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/config.py", line 435, in load
+auth-1  |     self.loaded_app = import_from_string(self.app)
+auth-1  |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/importer.py", line 22, in import_from_string
+auth-1  |     raise exc from None
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/importer.py", line 19, in import_from_string
+auth-1  |     module = importlib.import_module(module_str)
+auth-1  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/importlib/__init__.py", line 126, in import_module
+auth-1  |     return _bootstrap._gcd_import(name[level:], package, level)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+auth-1  |   File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+auth-1  |   File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+auth-1  |   File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+auth-1  |   File "<frozen importlib._bootstrap_external>", line 940, in exec_module
+auth-1  |   File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+auth-1  |   File "/app/auth_service/main.py", line 2, in <module>
+auth-1  |     from auth_service.routers.auth import router as auth_router
+auth-1  | ModuleNotFoundError: No module named 'auth_service'
+auth-1  | Traceback (most recent call last):
+auth-1  |   File "/usr/local/bin/uvicorn", line 8, in <module>
+auth-1  |     sys.exit(main())
+auth-1  |              ^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1161, in __call__
+auth-1  |     return self.main(*args, **kwargs)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1082, in main
+auth-1  |     rv = self.invoke(ctx)
+auth-1  |          ^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1443, in invoke
+auth-1  |     return ctx.invoke(self.callback, **ctx.params)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 788, in invoke
+auth-1  |     return __callback(*args, **kwargs)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/main.py", line 413, in main
+auth-1  |     run(
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/main.py", line 580, in run
+auth-1  |     server.run()
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 66, in run
+auth-1  |     return asyncio.run(self.serve(sockets=sockets))
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/runners.py", line 190, in run
+auth-1  |     return runner.run(main)
+auth-1  |            ^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/runners.py", line 118, in run
+auth-1  |     return self._loop.run_until_complete(task)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/base_events.py", line 654, in run_until_complete
+auth-1  |     return future.result()
+auth-1  |            ^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 70, in serve
+auth-1  |     await self._serve(sockets)
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 77, in _serve
+auth-1  |     config.load()
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/config.py", line 435, in load
+auth-1  |     self.loaded_app = import_from_string(self.app)
+auth-1  |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/importer.py", line 22, in import_from_string
+auth-1  |     raise exc from None
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/importer.py", line 19, in import_from_string
+auth-1  |     module = importlib.import_module(module_str)
+auth-1  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/importlib/__init__.py", line 126, in import_module
+auth-1  |     return _bootstrap._gcd_import(name[level:], package, level)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+auth-1  |   File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+auth-1  |   File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+auth-1  |   File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+auth-1  |   File "<frozen importlib._bootstrap_external>", line 940, in exec_module
+auth-1  |   File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+auth-1  |   File "/app/auth_service/main.py", line 2, in <module>
+auth-1  |     from auth_service.routers.auth import router as auth_router
+auth-1  | ModuleNotFoundError: No module named 'auth_service'
+auth-1  | Traceback (most recent call last):
+auth-1  |   File "/usr/local/bin/uvicorn", line 8, in <module>
+auth-1  |     sys.exit(main())
+auth-1  |              ^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1161, in __call__
+auth-1  |     return self.main(*args, **kwargs)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1082, in main
+auth-1  |     rv = self.invoke(ctx)
+auth-1  |          ^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1443, in invoke
+auth-1  |     return ctx.invoke(self.callback, **ctx.params)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 788, in invoke
+auth-1  |     return __callback(*args, **kwargs)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/main.py", line 413, in main
+auth-1  |     run(
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/main.py", line 580, in run
+auth-1  |     server.run()
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 66, in run
+auth-1  |     return asyncio.run(self.serve(sockets=sockets))
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/runners.py", line 190, in run
+auth-1  |     return runner.run(main)
+auth-1  |            ^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/runners.py", line 118, in run
+auth-1  |     return self._loop.run_until_complete(task)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/base_events.py", line 654, in run_until_complete
+auth-1  |     return future.result()
+auth-1  |            ^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 70, in serve
+auth-1  |     await self._serve(sockets)
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 77, in _serve
+auth-1  |     config.load()
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/config.py", line 435, in load
+auth-1  |     self.loaded_app = import_from_string(self.app)
+auth-1  |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/importer.py", line 22, in import_from_string
+auth-1  |     raise exc from None
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/importer.py", line 19, in import_from_string
+auth-1  |     module = importlib.import_module(module_str)
+auth-1  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/importlib/__init__.py", line 126, in import_module
+auth-1  |     return _bootstrap._gcd_import(name[level:], package, level)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+auth-1  |   File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+auth-1  |   File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+auth-1  |   File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+auth-1  |   File "<frozen importlib._bootstrap_external>", line 940, in exec_module
+auth-1  |   File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+auth-1  |   File "/app/auth_service/main.py", line 2, in <module>
+auth-1  |     from auth_service.routers.auth import router as auth_router
+auth-1  | ModuleNotFoundError: No module named 'auth_service'
+auth-1  | Traceback (most recent call last):
+auth-1  |   File "/usr/local/bin/uvicorn", line 8, in <module>
+auth-1  |     sys.exit(main())
+auth-1  |              ^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1161, in __call__
+auth-1  |     return self.main(*args, **kwargs)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1082, in main
+auth-1  |     rv = self.invoke(ctx)
+auth-1  |          ^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1443, in invoke
+auth-1  |     return ctx.invoke(self.callback, **ctx.params)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 788, in invoke
+auth-1  |     return __callback(*args, **kwargs)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/main.py", line 413, in main
+auth-1  |     run(
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/main.py", line 580, in run
+auth-1  |     server.run()
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 66, in run
+auth-1  |     return asyncio.run(self.serve(sockets=sockets))
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/runners.py", line 190, in run
+auth-1  |     return runner.run(main)
+auth-1  |            ^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/runners.py", line 118, in run
+auth-1  |     return self._loop.run_until_complete(task)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/base_events.py", line 654, in run_until_complete
+auth-1  |     return future.result()
+auth-1  |            ^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 70, in serve
+auth-1  |     await self._serve(sockets)
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 77, in _serve
+auth-1  |     config.load()
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/config.py", line 435, in load
+auth-1  |     self.loaded_app = import_from_string(self.app)
+auth-1  |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/importer.py", line 22, in import_from_string
+auth-1  |     raise exc from None
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/importer.py", line 19, in import_from_string
+auth-1  |     module = importlib.import_module(module_str)
+auth-1  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/importlib/__init__.py", line 126, in import_module
+auth-1  |     return _bootstrap._gcd_import(name[level:], package, level)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+auth-1  |   File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+auth-1  |   File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+auth-1  |   File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+auth-1  |   File "<frozen importlib._bootstrap_external>", line 940, in exec_module
+auth-1  |   File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+auth-1  |   File "/app/auth_service/main.py", line 2, in <module>
+auth-1  |     from auth_service.routers.auth import router as auth_router
+auth-1  | ModuleNotFoundError: No module named 'auth_service'
+auth-1  | Traceback (most recent call last):
+auth-1  |   File "/usr/local/bin/uvicorn", line 8, in <module>
+auth-1  |     sys.exit(main())
+auth-1  |              ^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1161, in __call__
+auth-1  |     return self.main(*args, **kwargs)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1082, in main
+auth-1  |     rv = self.invoke(ctx)
+auth-1  |          ^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1443, in invoke
+auth-1  |     return ctx.invoke(self.callback, **ctx.params)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 788, in invoke
+auth-1  |     return __callback(*args, **kwargs)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/main.py", line 413, in main
+auth-1  |     run(
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/main.py", line 580, in run
+auth-1  |     server.run()
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 66, in run
+auth-1  |     return asyncio.run(self.serve(sockets=sockets))
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/runners.py", line 190, in run
+auth-1  |     return runner.run(main)
+auth-1  |            ^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/runners.py", line 118, in run
+auth-1  |     return self._loop.run_until_complete(task)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/base_events.py", line 654, in run_until_complete
+auth-1  |     return future.result()
+auth-1  |            ^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 70, in serve
+auth-1  |     await self._serve(sockets)
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 77, in _serve
+auth-1  |     config.load()
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/config.py", line 435, in load
+auth-1  |     self.loaded_app = import_from_string(self.app)
+auth-1  |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/importer.py", line 22, in import_from_string
+auth-1  |     raise exc from None
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/importer.py", line 19, in import_from_string
+auth-1  |     module = importlib.import_module(module_str)
+auth-1  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/importlib/__init__.py", line 126, in import_module
+auth-1  |     return _bootstrap._gcd_import(name[level:], package, level)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+auth-1  |   File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+auth-1  |   File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+auth-1  |   File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+auth-1  |   File "<frozen importlib._bootstrap_external>", line 940, in exec_module
+auth-1  |   File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+auth-1  |   File "/app/auth_service/main.py", line 2, in <module>
+auth-1  |     from auth_service.routers.auth import router as auth_router
+auth-1  | ModuleNotFoundError: No module named 'auth_service'
+auth-1  | Traceback (most recent call last):
+auth-1  |   File "/usr/local/bin/uvicorn", line 8, in <module>
+auth-1  |     sys.exit(main())
+auth-1  |              ^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1161, in __call__
+auth-1  |     return self.main(*args, **kwargs)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1082, in main
+auth-1  |     rv = self.invoke(ctx)
+auth-1  |          ^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1443, in invoke
+auth-1  |     return ctx.invoke(self.callback, **ctx.params)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 788, in invoke
+auth-1  |     return __callback(*args, **kwargs)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/main.py", line 413, in main
+auth-1  |     run(
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/main.py", line 580, in run
+auth-1  |     server.run()
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 66, in run
+auth-1  |     return asyncio.run(self.serve(sockets=sockets))
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/runners.py", line 190, in run
+auth-1  |     return runner.run(main)
+auth-1  |            ^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/runners.py", line 118, in run
+auth-1  |     return self._loop.run_until_complete(task)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/base_events.py", line 654, in run_until_complete
+auth-1  |     return future.result()
+auth-1  |            ^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 70, in serve
+auth-1  |     await self._serve(sockets)
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 77, in _serve
+auth-1  |     config.load()
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/config.py", line 435, in load
+auth-1  |     self.loaded_app = import_from_string(self.app)
+auth-1  |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/importer.py", line 22, in import_from_string
+auth-1  |     raise exc from None
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/importer.py", line 19, in import_from_string
+auth-1  |     module = importlib.import_module(module_str)
+auth-1  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/importlib/__init__.py", line 126, in import_module
+auth-1  |     return _bootstrap._gcd_import(name[level:], package, level)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+auth-1  |   File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+auth-1  |   File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+auth-1  |   File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+auth-1  |   File "<frozen importlib._bootstrap_external>", line 940, in exec_module
+auth-1  |   File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+auth-1  |   File "/app/auth_service/main.py", line 2, in <module>
+auth-1  |     from auth_service.routers.auth import router as auth_router
+auth-1  | ModuleNotFoundError: No module named 'auth_service'
+auth-1  | Traceback (most recent call last):
+auth-1  |   File "/usr/local/bin/uvicorn", line 8, in <module>
+auth-1  |     sys.exit(main())
+auth-1  |              ^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1161, in __call__
+auth-1  |     return self.main(*args, **kwargs)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1082, in main
+auth-1  |     rv = self.invoke(ctx)
+auth-1  |          ^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1443, in invoke
+auth-1  |     return ctx.invoke(self.callback, **ctx.params)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 788, in invoke
+auth-1  |     return __callback(*args, **kwargs)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/main.py", line 413, in main
+auth-1  |     run(
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/main.py", line 580, in run
+auth-1  |     server.run()
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 66, in run
+auth-1  |     return asyncio.run(self.serve(sockets=sockets))
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/runners.py", line 190, in run
+auth-1  |     return runner.run(main)
+auth-1  |            ^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/runners.py", line 118, in run
+auth-1  |     return self._loop.run_until_complete(task)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/base_events.py", line 654, in run_until_complete
+auth-1  |     return future.result()
+auth-1  |            ^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 70, in serve
+auth-1  |     await self._serve(sockets)
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 77, in _serve
+auth-1  |     config.load()
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/config.py", line 435, in load
+auth-1  |     self.loaded_app = import_from_string(self.app)
+auth-1  |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/importer.py", line 22, in import_from_string
+auth-1  |     raise exc from None
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/importer.py", line 19, in import_from_string
+auth-1  |     module = importlib.import_module(module_str)
+auth-1  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/importlib/__init__.py", line 126, in import_module
+auth-1  |     return _bootstrap._gcd_import(name[level:], package, level)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+auth-1  |   File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+auth-1  |   File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+auth-1  |   File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+auth-1  |   File "<frozen importlib._bootstrap_external>", line 940, in exec_module
+auth-1  |   File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+auth-1  |   File "/app/auth_service/main.py", line 2, in <module>
+auth-1  |     from auth_service.routers.auth import router as auth_router
+auth-1  | ModuleNotFoundError: No module named 'auth_service'
+auth-1  | Traceback (most recent call last):
+auth-1  |   File "/usr/local/bin/uvicorn", line 8, in <module>
+auth-1  |     sys.exit(main())
+auth-1  |              ^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1161, in __call__
+auth-1  |     return self.main(*args, **kwargs)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1082, in main
+auth-1  |     rv = self.invoke(ctx)
+auth-1  |          ^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1443, in invoke
+auth-1  |     return ctx.invoke(self.callback, **ctx.params)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 788, in invoke
+auth-1  |     return __callback(*args, **kwargs)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/main.py", line 413, in main
+auth-1  |     run(
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/main.py", line 580, in run
+auth-1  |     server.run()
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 66, in run
+auth-1  |     return asyncio.run(self.serve(sockets=sockets))
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/runners.py", line 190, in run
+auth-1  |     return runner.run(main)
+auth-1  |            ^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/runners.py", line 118, in run
+auth-1  |     return self._loop.run_until_complete(task)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/base_events.py", line 654, in run_until_complete
+auth-1  |     return future.result()
+auth-1  |            ^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 70, in serve
+auth-1  |     await self._serve(sockets)
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 77, in _serve
+auth-1  |     config.load()
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/config.py", line 435, in load
+auth-1  |     self.loaded_app = import_from_string(self.app)
+auth-1  |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/importer.py", line 22, in import_from_string
+auth-1  |     raise exc from None
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/importer.py", line 19, in import_from_string
+auth-1  |     module = importlib.import_module(module_str)
+auth-1  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/importlib/__init__.py", line 126, in import_module
+auth-1  |     return _bootstrap._gcd_import(name[level:], package, level)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+auth-1  |   File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+auth-1  |   File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+auth-1  |   File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+auth-1  |   File "<frozen importlib._bootstrap_external>", line 940, in exec_module
+auth-1  |   File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+auth-1  |   File "/app/auth_service/main.py", line 2, in <module>
+auth-1  |     from auth_service.routers.auth import router as auth_router
+auth-1  | ModuleNotFoundError: No module named 'auth_service'
+auth-1  | Traceback (most recent call last):
+auth-1  |   File "/usr/local/bin/uvicorn", line 8, in <module>
+auth-1  |     sys.exit(main())
+auth-1  |              ^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1161, in __call__
+auth-1  |     return self.main(*args, **kwargs)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1082, in main
+auth-1  |     rv = self.invoke(ctx)
+auth-1  |          ^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1443, in invoke
+auth-1  |     return ctx.invoke(self.callback, **ctx.params)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 788, in invoke
+auth-1  |     return __callback(*args, **kwargs)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/main.py", line 413, in main
+auth-1  |     run(
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/main.py", line 580, in run
+auth-1  |     server.run()
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 66, in run
+auth-1  |     return asyncio.run(self.serve(sockets=sockets))
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/runners.py", line 190, in run
+auth-1  |     return runner.run(main)
+auth-1  |            ^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/runners.py", line 118, in run
+auth-1  |     return self._loop.run_until_complete(task)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/base_events.py", line 654, in run_until_complete
+auth-1  |     return future.result()
+auth-1  |            ^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 70, in serve
+auth-1  |     await self._serve(sockets)
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 77, in _serve
+auth-1  |     config.load()
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/config.py", line 435, in load
+auth-1  |     self.loaded_app = import_from_string(self.app)
+auth-1  |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/importer.py", line 22, in import_from_string
+auth-1  |     raise exc from None
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/importer.py", line 19, in import_from_string
+auth-1  |     module = importlib.import_module(module_str)
+auth-1  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/importlib/__init__.py", line 126, in import_module
+auth-1  |     return _bootstrap._gcd_import(name[level:], package, level)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+auth-1  |   File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+auth-1  |   File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+auth-1  |   File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+auth-1  |   File "<frozen importlib._bootstrap_external>", line 940, in exec_module
+auth-1  |   File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+auth-1  |   File "/app/auth_service/main.py", line 2, in <module>
+auth-1  |     from auth_service.routers.auth import router as auth_router
+auth-1  | ModuleNotFoundError: No module named 'auth_service'
+auth-1  | Traceback (most recent call last):
+auth-1  |   File "/usr/local/bin/uvicorn", line 8, in <module>
+auth-1  |     sys.exit(main())
+auth-1  |              ^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1161, in __call__
+auth-1  |     return self.main(*args, **kwargs)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1082, in main
+auth-1  |     rv = self.invoke(ctx)
+auth-1  |          ^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1443, in invoke
+auth-1  |     return ctx.invoke(self.callback, **ctx.params)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 788, in invoke
+auth-1  |     return __callback(*args, **kwargs)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/main.py", line 413, in main
+auth-1  |     run(
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/main.py", line 580, in run
+auth-1  |     server.run()
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 66, in run
+auth-1  |     return asyncio.run(self.serve(sockets=sockets))
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/runners.py", line 190, in run
+auth-1  |     return runner.run(main)
+auth-1  |            ^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/runners.py", line 118, in run
+auth-1  |     return self._loop.run_until_complete(task)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/base_events.py", line 654, in run_until_complete
+auth-1  |     return future.result()
+auth-1  |            ^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 70, in serve
+auth-1  |     await self._serve(sockets)
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 77, in _serve
+auth-1  |     config.load()
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/config.py", line 435, in load
+auth-1  |     self.loaded_app = import_from_string(self.app)
+auth-1  |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/importer.py", line 22, in import_from_string
+auth-1  |     raise exc from None
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/importer.py", line 19, in import_from_string
+auth-1  |     module = importlib.import_module(module_str)
+auth-1  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/importlib/__init__.py", line 126, in import_module
+auth-1  |     return _bootstrap._gcd_import(name[level:], package, level)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+auth-1  |   File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+auth-1  |   File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+auth-1  |   File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+auth-1  |   File "<frozen importlib._bootstrap_external>", line 940, in exec_module
+auth-1  |   File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+auth-1  |   File "/app/auth_service/main.py", line 2, in <module>
+auth-1  |     from auth_service.routers.auth import router as auth_router
+auth-1  | ModuleNotFoundError: No module named 'auth_service'
+auth-1  | Traceback (most recent call last):
+auth-1  |   File "/usr/local/bin/uvicorn", line 8, in <module>
+auth-1  |     sys.exit(main())
+auth-1  |              ^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1161, in __call__
+auth-1  |     return self.main(*args, **kwargs)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1082, in main
+auth-1  |     rv = self.invoke(ctx)
+auth-1  |          ^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1443, in invoke
+auth-1  |     return ctx.invoke(self.callback, **ctx.params)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 788, in invoke
+auth-1  |     return __callback(*args, **kwargs)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/main.py", line 413, in main
+auth-1  |     run(
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/main.py", line 580, in run
+auth-1  |     server.run()
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 66, in run
+auth-1  |     return asyncio.run(self.serve(sockets=sockets))
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/runners.py", line 190, in run
+auth-1  |     return runner.run(main)
+auth-1  |            ^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/runners.py", line 118, in run
+auth-1  |     return self._loop.run_until_complete(task)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/base_events.py", line 654, in run_until_complete
+auth-1  |     return future.result()
+auth-1  |            ^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 70, in serve
+auth-1  |     await self._serve(sockets)
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 77, in _serve
+auth-1  |     config.load()
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/config.py", line 435, in load
+auth-1  |     self.loaded_app = import_from_string(self.app)
+auth-1  |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/importer.py", line 22, in import_from_string
+auth-1  |     raise exc from None
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/importer.py", line 19, in import_from_string
+auth-1  |     module = importlib.import_module(module_str)
+auth-1  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/importlib/__init__.py", line 126, in import_module
+auth-1  |     return _bootstrap._gcd_import(name[level:], package, level)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+auth-1  |   File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+auth-1  |   File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+auth-1  |   File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+auth-1  |   File "<frozen importlib._bootstrap_external>", line 940, in exec_module
+auth-1  |   File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+auth-1  |   File "/app/auth_service/main.py", line 2, in <module>
+auth-1  |     from auth_service.routers.auth import router as auth_router
+auth-1  | ModuleNotFoundError: No module named 'auth_service'
+auth-1  | Traceback (most recent call last):
+auth-1  |   File "/usr/local/bin/uvicorn", line 8, in <module>
+auth-1  |     sys.exit(main())
+auth-1  |              ^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1161, in __call__
+auth-1  |     return self.main(*args, **kwargs)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1082, in main
+auth-1  |     rv = self.invoke(ctx)
+auth-1  |          ^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1443, in invoke
+auth-1  |     return ctx.invoke(self.callback, **ctx.params)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 788, in invoke
+auth-1  |     return __callback(*args, **kwargs)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/main.py", line 413, in main
+auth-1  |     run(
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/main.py", line 580, in run
+auth-1  |     server.run()
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 66, in run
+auth-1  |     return asyncio.run(self.serve(sockets=sockets))
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/runners.py", line 190, in run
+auth-1  |     return runner.run(main)
+auth-1  |            ^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/runners.py", line 118, in run
+auth-1  |     return self._loop.run_until_complete(task)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/base_events.py", line 654, in run_until_complete
+auth-1  |     return future.result()
+auth-1  |            ^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 70, in serve
+auth-1  |     await self._serve(sockets)
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 77, in _serve
+auth-1  |     config.load()
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/config.py", line 435, in load
+auth-1  |     self.loaded_app = import_from_string(self.app)
+auth-1  |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/importer.py", line 22, in import_from_string
+auth-1  |     raise exc from None
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/importer.py", line 19, in import_from_string
+auth-1  |     module = importlib.import_module(module_str)
+auth-1  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/importlib/__init__.py", line 126, in import_module
+auth-1  |     return _bootstrap._gcd_import(name[level:], package, level)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+auth-1  |   File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+auth-1  |   File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+auth-1  |   File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+auth-1  |   File "<frozen importlib._bootstrap_external>", line 940, in exec_module
+auth-1  |   File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+auth-1  |   File "/app/auth_service/main.py", line 2, in <module>
+auth-1  |     from auth_service.routers.auth import router as auth_router
+auth-1  | ModuleNotFoundError: No module named 'auth_service'
+auth-1  | Traceback (most recent call last):
+auth-1  |   File "/usr/local/bin/uvicorn", line 8, in <module>
+auth-1  |     sys.exit(main())
+auth-1  |              ^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1161, in __call__
+auth-1  |     return self.main(*args, **kwargs)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1082, in main
+auth-1  |     rv = self.invoke(ctx)
+auth-1  |          ^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1443, in invoke
+auth-1  |     return ctx.invoke(self.callback, **ctx.params)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 788, in invoke
+auth-1  |     return __callback(*args, **kwargs)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/main.py", line 413, in main
+auth-1  |     run(
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/main.py", line 580, in run
+auth-1  |     server.run()
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 66, in run
+auth-1  |     return asyncio.run(self.serve(sockets=sockets))
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/runners.py", line 190, in run
+auth-1  |     return runner.run(main)
+auth-1  |            ^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/runners.py", line 118, in run
+auth-1  |     return self._loop.run_until_complete(task)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/base_events.py", line 654, in run_until_complete
+auth-1  |     return future.result()
+auth-1  |            ^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 70, in serve
+auth-1  |     await self._serve(sockets)
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 77, in _serve
+auth-1  |     config.load()
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/config.py", line 435, in load
+auth-1  |     self.loaded_app = import_from_string(self.app)
+auth-1  |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/importer.py", line 22, in import_from_string
+auth-1  |     raise exc from None
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/importer.py", line 19, in import_from_string
+auth-1  |     module = importlib.import_module(module_str)
+auth-1  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/importlib/__init__.py", line 126, in import_module
+auth-1  |     return _bootstrap._gcd_import(name[level:], package, level)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+auth-1  |   File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+auth-1  |   File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+auth-1  |   File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+auth-1  |   File "<frozen importlib._bootstrap_external>", line 940, in exec_module
+auth-1  |   File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+auth-1  |   File "/app/auth_service/main.py", line 2, in <module>
+auth-1  |     from auth_service.routers.auth import router as auth_router
+auth-1  | ModuleNotFoundError: No module named 'auth_service'
+auth-1  | Traceback (most recent call last):
+auth-1  |   File "/usr/local/bin/uvicorn", line 8, in <module>
+auth-1  |     sys.exit(main())
+auth-1  |              ^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1161, in __call__
+auth-1  |     return self.main(*args, **kwargs)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1082, in main
+auth-1  |     rv = self.invoke(ctx)
+auth-1  |          ^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1443, in invoke
+auth-1  |     return ctx.invoke(self.callback, **ctx.params)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 788, in invoke
+auth-1  |     return __callback(*args, **kwargs)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/main.py", line 413, in main
+auth-1  |     run(
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/main.py", line 580, in run
+auth-1  |     server.run()
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 66, in run
+auth-1  |     return asyncio.run(self.serve(sockets=sockets))
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/runners.py", line 190, in run
+auth-1  |     return runner.run(main)
+auth-1  |            ^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/runners.py", line 118, in run
+auth-1  |     return self._loop.run_until_complete(task)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/base_events.py", line 654, in run_until_complete
+auth-1  |     return future.result()
+auth-1  |            ^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 70, in serve
+auth-1  |     await self._serve(sockets)
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 77, in _serve
+auth-1  |     config.load()
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/config.py", line 435, in load
+auth-1  |     self.loaded_app = import_from_string(self.app)
+auth-1  |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/importer.py", line 22, in import_from_string
+auth-1  |     raise exc from None
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/importer.py", line 19, in import_from_string
+auth-1  |     module = importlib.import_module(module_str)
+auth-1  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/importlib/__init__.py", line 126, in import_module
+auth-1  |     return _bootstrap._gcd_import(name[level:], package, level)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+auth-1  |   File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+auth-1  |   File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+auth-1  |   File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+auth-1  |   File "<frozen importlib._bootstrap_external>", line 940, in exec_module
+auth-1  |   File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+auth-1  |   File "/app/auth_service/main.py", line 2, in <module>
+auth-1  |     from auth_service.routers.auth import router as auth_router
+auth-1  | ModuleNotFoundError: No module named 'auth_service'
+auth-1  | Traceback (most recent call last):
+auth-1  |   File "/usr/local/bin/uvicorn", line 8, in <module>
+auth-1  |     sys.exit(main())
+auth-1  |              ^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1161, in __call__
+auth-1  |     return self.main(*args, **kwargs)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1082, in main
+auth-1  |     rv = self.invoke(ctx)
+auth-1  |          ^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1443, in invoke
+auth-1  |     return ctx.invoke(self.callback, **ctx.params)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 788, in invoke
+auth-1  |     return __callback(*args, **kwargs)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/main.py", line 413, in main
+auth-1  |     run(
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/main.py", line 580, in run
+auth-1  |     server.run()
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 66, in run
+auth-1  |     return asyncio.run(self.serve(sockets=sockets))
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/runners.py", line 190, in run
+auth-1  |     return runner.run(main)
+auth-1  |            ^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/runners.py", line 118, in run
+auth-1  |     return self._loop.run_until_complete(task)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/base_events.py", line 654, in run_until_complete
+auth-1  |     return future.result()
+auth-1  |            ^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 70, in serve
+auth-1  |     await self._serve(sockets)
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 77, in _serve
+auth-1  |     config.load()
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/config.py", line 435, in load
+auth-1  |     self.loaded_app = import_from_string(self.app)
+auth-1  |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/importer.py", line 22, in import_from_string
+auth-1  |     raise exc from None
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/importer.py", line 19, in import_from_string
+auth-1  |     module = importlib.import_module(module_str)
+auth-1  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/importlib/__init__.py", line 126, in import_module
+auth-1  |     return _bootstrap._gcd_import(name[level:], package, level)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+auth-1  |   File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+auth-1  |   File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+auth-1  |   File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+auth-1  |   File "<frozen importlib._bootstrap_external>", line 940, in exec_module
+auth-1  |   File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+auth-1  |   File "/app/auth_service/main.py", line 2, in <module>
+auth-1  |     from auth_service.routers.auth import router as auth_router
+auth-1  | ModuleNotFoundError: No module named 'auth_service'
+auth-1  | Traceback (most recent call last):
+auth-1  |   File "/usr/local/bin/uvicorn", line 8, in <module>
+auth-1  |     sys.exit(main())
+auth-1  |              ^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1161, in __call__
+auth-1  |     return self.main(*args, **kwargs)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1082, in main
+auth-1  |     rv = self.invoke(ctx)
+auth-1  |          ^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 1443, in invoke
+auth-1  |     return ctx.invoke(self.callback, **ctx.params)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/click/core.py", line 788, in invoke
+auth-1  |     return __callback(*args, **kwargs)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/main.py", line 413, in main
+auth-1  |     run(
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/main.py", line 580, in run
+auth-1  |     server.run()
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 66, in run
+auth-1  |     return asyncio.run(self.serve(sockets=sockets))
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/runners.py", line 190, in run
+auth-1  |     return runner.run(main)
+auth-1  |            ^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/runners.py", line 118, in run
+auth-1  |     return self._loop.run_until_complete(task)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/asyncio/base_events.py", line 654, in run_until_complete
+auth-1  |     return future.result()
+auth-1  |            ^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 70, in serve
+auth-1  |     await self._serve(sockets)
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 77, in _serve
+auth-1  |     config.load()
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/config.py", line 435, in load
+auth-1  |     self.loaded_app = import_from_string(self.app)
+auth-1  |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/importer.py", line 22, in import_from_string
+auth-1  |     raise exc from None
+auth-1  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/importer.py", line 19, in import_from_string
+auth-1  |     module = importlib.import_module(module_str)
+auth-1  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "/usr/local/lib/python3.11/importlib/__init__.py", line 126, in import_module
+auth-1  |     return _bootstrap._gcd_import(name[level:], package, level)
+auth-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+auth-1  |   File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+auth-1  |   File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+auth-1  |   File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+auth-1  |   File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+auth-1  |   File "<frozen importlib._bootstrap_external>", line 940, in exec_module
+auth-1  |   File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+auth-1  |   File "/app/auth_service/main.py", line 2, in <module>
+auth-1  |     from auth_service.routers.auth import router as auth_router
+auth-1  | ModuleNotFoundError: No module named 'auth_service'
