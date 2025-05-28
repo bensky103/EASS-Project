@@ -93,11 +93,14 @@ async def analyze_stock(request: StockAnalysisRequest):
         try:
             technical_indicators = {
                 "latest_close": float(df["close"].iloc[-1]),
-                "sma_5": float(df["sma_5"].iloc[-1]) if pd.notna(df["sma_5"].iloc[-1]) else None,
-                "ema_5": float(df["ema_5"].iloc[-1]) if pd.notna(df["ema_5"].iloc[-1]) else None,
-                "macd": float(df["macd"].iloc[-1]) if pd.notna(df["macd"].iloc[-1]) else None,
-                "bb_upper": float(df["bb_upper"].iloc[-1]) if pd.notna(df["bb_upper"].iloc[-1]) else None,
-                "bb_lower": float(df["bb_lower"].iloc[-1]) if pd.notna(df["bb_lower"].iloc[-1]) else None
+                "sma_5": float(df["sma_5"].iloc[-1]) if pd.notna(df["sma_5"].iloc[-1]) else 0.0,
+                "ema_5": float(df["ema_5"].iloc[-1]) if pd.notna(df["ema_5"].iloc[-1]) else 0.0,
+                "macd": float(df["macd"].iloc[-1]) if pd.notna(df["macd"].iloc[-1]) else 0.0,
+                "macd_signal": float(df["macd_signal"].iloc[-1]) if pd.notna(df["macd_signal"].iloc[-1]) else 0.0,
+                "macd_hist": float(df["macd_hist"].iloc[-1]) if pd.notna(df["macd_hist"].iloc[-1]) else 0.0,
+                "bb_upper": float(df["bb_upper"].iloc[-1]) if pd.notna(df["bb_upper"].iloc[-1]) else 0.0,
+                "bb_middle": float(df["bb_middle"].iloc[-1]) if pd.notna(df["bb_middle"].iloc[-1]) else 0.0,
+                "bb_lower": float(df["bb_lower"].iloc[-1]) if pd.notna(df["bb_lower"].iloc[-1]) else 0.0
             }
             logger.info(f"Technical indicators prepared: {technical_indicators}")
         except Exception as e:

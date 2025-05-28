@@ -10,4 +10,4 @@ python-json-logger==2.0.7
 pytest==7.4.3
 httpx==0.25.2
 pydantic-settings==2.1.0
-setuptools==69.0.3 
+setuptools<81.0.0 
