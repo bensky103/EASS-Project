@@ -14,4 +14,8 @@ def fetch_price_data(symbol: str, api_key: str, days: int = 30) -> pd.DataFrame:
         for date, d in ts.items()
     ])
     df = df.sort_values("date", ascending=True).tail(days).reset_index(drop=True)
+    print("\n=== Price Data ===")
+    print(f"Fetched {len(df)} days of data for {symbol}")
+    print("Latest 5 days of data:")
+    print(df.tail().to_string())
     return df 

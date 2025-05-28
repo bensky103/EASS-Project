@@ -12,9 +12,17 @@ def calculate_volume_features(df: pd.DataFrame) -> dict:
         elif df["close"].iloc[i] < df["close"].iloc[i - 1]:
             obv -= df["volume"].iloc[i]
 
-    return {
+    features = {
         "latest_volume": latest_volume,
         "volume_avg": avg_volume,
         "volume_spike": volume_spike,
         "obv": obv
-    } 
+    }
+    
+    print("\n=== Volume Features ===")
+    print(f"Latest Volume: {latest_volume:,}")
+    print(f"Average Volume: {avg_volume:,.2f}")
+    print(f"Volume Spike Detected: {volume_spike}")
+    print(f"On-Balance Volume (OBV): {obv:,}")
+    
+    return features 

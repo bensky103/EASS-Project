@@ -24,9 +24,23 @@ def fetch_fundamentals(symbol: str, api_key: str) -> dict:
             "surprisePercentage": latest.get("surprisePercentage")
         }
 
-    return {
+    fundamentals = {
         "pe_ratio": pe_ratio,
         "eps": eps,
         "next_earnings": next_earnings,
         "latest_earnings": latest_report
-    } 
+    }
+    
+    print("\n=== Fundamental Data ===")
+    print(f"P/E Ratio: {pe_ratio}")
+    print(f"EPS: {eps}")
+    print(f"Next Earnings Date: {next_earnings}")
+    if latest_report:
+        print("\nLatest Earnings Report:")
+        print(f"Fiscal Date Ending: {latest_report['fiscalDateEnding']}")
+        print(f"Reported EPS: {latest_report['reportedEPS']}")
+        print(f"Estimated EPS: {latest_report['estimatedEPS']}")
+        print(f"Surprise: {latest_report['surprise']}")
+        print(f"Surprise Percentage: {latest_report['surprisePercentage']}%")
+    
+    return fundamentals 

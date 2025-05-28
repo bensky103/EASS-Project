@@ -8,4 +8,6 @@ requests==2.31.0
 pydantic==2.5.2
 python-json-logger==2.0.7
 pytest==7.4.3
-httpx==0.25.2 
+httpx==0.25.2
+pydantic-settings==2.1.0
+setuptools==69.0.3 
