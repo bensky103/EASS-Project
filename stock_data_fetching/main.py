@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Dict, Any, Optional
 import uvicorn
+import pandas as pd
 
 from fetch_price_data import fetch_price_data
 from calculate_indicators import add_technical_indicators
@@ -59,20 +60,44 @@ async def analyze_stock(request: StockAnalysisRequest):
         if df.empty:
             raise HTTPException(status_code=404, detail=f"No data found for symbol {request.symbol}")
         
-        # Calculate indicators and features
-        df = add_technical_indicators(df)
-        volume_features = calculate_volume_features(df)
-        fundamentals = fetch_fundamentals(request.symbol, settings.ALPHA_VANTAGE_API_KEY)
+        logger.info("Price data fetched successfully")
         
-        # Prepare technical indicators
-        technical_indicators = {
-            "latest_close": float(df["close"].iloc[-1]),
-            "sma_5": float(df["sma_5"].iloc[-1]),
-            "ema_5": float(df["ema_5"].iloc[-1]),
-            "macd": float(df["macd"].iloc[-1]),
-            "bb_upper": float(df["bb_upper"].iloc[-1]),
-            "bb_lower": float(df["bb_lower"].iloc[-1])
-        }
+        # Calculate indicators and features
+        try:
+            df = add_technical_indicators(df)
+            logger.info("Technical indicators calculated successfully")
+        except Exception as e:
+            logger.error(f"Error calculating technical indicators: {str(e)}")
+            raise HTTPException(status_code=500, detail=f"Error calculating technical indicators: {str(e)}")
+            
+        try:
+            volume_features = calculate_volume_features(df)
+            logger.info("Volume features calculated successfully")
+        except Exception as e:
+            logger.error(f"Error calculating volume features: {str(e)}")
+            raise HTTPException(status_code=500, detail=f"Error calculating volume features: {str(e)}")
+            
+        try:
+            fundamentals = fetch_fundamentals(request.symbol, settings.ALPHA_VANTAGE_API_KEY)
+            logger.info("Fundamentals fetched successfully")
+        except Exception as e:
+            logger.error(f"Error fetching fundamentals: {str(e)}")
+            raise HTTPException(status_code=500, detail=f"Error fetching fundamentals: {str(e)}")
+        
+        # Prepare technical indicators with error checking
+        try:
+            technical_indicators = {
+                "latest_close": float(df["close"].iloc[-1]),
+                "sma_5": float(df["sma_5"].iloc[-1]) if pd.notna(df["sma_5"].iloc[-1]) else None,
+                "ema_5": float(df["ema_5"].iloc[-1]) if pd.notna(df["ema_5"].iloc[-1]) else None,
+                "macd": float(df["macd"].iloc[-1]) if pd.notna(df["macd"].iloc[-1]) else None,
+                "bb_upper": float(df["bb_upper"].iloc[-1]) if pd.notna(df["bb_upper"].iloc[-1]) else None,
+                "bb_lower": float(df["bb_lower"].iloc[-1]) if pd.notna(df["bb_lower"].iloc[-1]) else None
+            }
+            logger.info("Technical indicators prepared successfully")
+        except Exception as e:
+            logger.error(f"Error preparing technical indicators: {str(e)}")
+            raise HTTPException(status_code=500, detail=f"Error preparing technical indicators: {str(e)}")
         
         # Prepare final payload for GPT
         final_payload = {
@@ -83,7 +108,12 @@ async def analyze_stock(request: StockAnalysisRequest):
         }
         
         # Get GPT analysis
-        gpt_response = send_features_to_gpt(final_payload, settings.OPENAI_API_KEY)
+        try:
+            gpt_response = send_features_to_gpt(final_payload, settings.OPENAI_API_KEY)
+            logger.info("GPT analysis completed successfully")
+        except Exception as e:
+            logger.error(f"Error getting GPT analysis: {str(e)}")
+            raise HTTPException(status_code=500, detail=f"Error getting GPT analysis: {str(e)}")
         
         logger.info(f"Successfully completed analysis for {request.symbol}")
         
