@@ -57,6 +57,10 @@ async def analyze_stock(request: StockAnalysisRequest):
         
         # Fetch price data
         df = fetch_price_data(request.symbol, settings.ALPHA_VANTAGE_API_KEY)
+        logger.info(f"Raw price data shape: {df.shape}")
+        logger.info(f"Price data columns: {df.columns.tolist()}")
+        logger.info(f"First few rows of price data:\n{df.head().to_string()}")
+        
         if df.empty:
             raise HTTPException(status_code=404, detail=f"No data found for symbol {request.symbol}")
         
@@ -65,21 +69,22 @@ async def analyze_stock(request: StockAnalysisRequest):
         # Calculate indicators and features
         try:
             df = add_technical_indicators(df)
-            logger.info("Technical indicators calculated successfully")
+            logger.info(f"Technical indicators added. New columns: {df.columns.tolist()}")
+            logger.info(f"Technical indicators sample:\n{df.tail().to_string()}")
         except Exception as e:
             logger.error(f"Error calculating technical indicators: {str(e)}")
             raise HTTPException(status_code=500, detail=f"Error calculating technical indicators: {str(e)}")
             
         try:
             volume_features = calculate_volume_features(df)
-            logger.info("Volume features calculated successfully")
+            logger.info(f"Volume features calculated: {volume_features}")
         except Exception as e:
             logger.error(f"Error calculating volume features: {str(e)}")
             raise HTTPException(status_code=500, detail=f"Error calculating volume features: {str(e)}")
             
         try:
             fundamentals = fetch_fundamentals(request.symbol, settings.ALPHA_VANTAGE_API_KEY)
-            logger.info("Fundamentals fetched successfully")
+            logger.info(f"Fundamentals fetched: {fundamentals}")
         except Exception as e:
             logger.error(f"Error fetching fundamentals: {str(e)}")
             raise HTTPException(status_code=500, detail=f"Error fetching fundamentals: {str(e)}")
@@ -94,7 +99,7 @@ async def analyze_stock(request: StockAnalysisRequest):
                 "bb_upper": float(df["bb_upper"].iloc[-1]) if pd.notna(df["bb_upper"].iloc[-1]) else None,
                 "bb_lower": float(df["bb_lower"].iloc[-1]) if pd.notna(df["bb_lower"].iloc[-1]) else None
             }
-            logger.info("Technical indicators prepared successfully")
+            logger.info(f"Technical indicators prepared: {technical_indicators}")
         except Exception as e:
             logger.error(f"Error preparing technical indicators: {str(e)}")
             raise HTTPException(status_code=500, detail=f"Error preparing technical indicators: {str(e)}")
@@ -106,18 +111,19 @@ async def analyze_stock(request: StockAnalysisRequest):
             **volume_features,
             **fundamentals
         }
+        logger.info(f"Final payload prepared: {final_payload}")
         
         # Get GPT analysis
         try:
             gpt_response = send_features_to_gpt(final_payload, settings.OPENAI_API_KEY)
-            logger.info("GPT analysis completed successfully")
+            logger.info(f"GPT analysis received: {gpt_response[:200]}...")  # Log first 200 chars
         except Exception as e:
             logger.error(f"Error getting GPT analysis: {str(e)}")
             raise HTTPException(status_code=500, detail=f"Error getting GPT analysis: {str(e)}")
         
         logger.info(f"Successfully completed analysis for {request.symbol}")
         
-        return StockAnalysisResponse(
+        response = StockAnalysisResponse(
             symbol=request.symbol,
             analysis=final_payload,
             technical_indicators=technical_indicators,
@@ -125,9 +131,12 @@ async def analyze_stock(request: StockAnalysisRequest):
             fundamentals=fundamentals,
             gpt_analysis=gpt_response
         )
+        logger.info(f"Response prepared: {response}")
+        return response
         
     except Exception as e:
         logger.error(f"Error analyzing stock {request.symbol}: {str(e)}")
+        logger.exception("Full traceback:")  # This will log the full stack trace
         raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
