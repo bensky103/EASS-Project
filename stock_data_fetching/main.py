@@ -11,13 +11,12 @@ from fetch_price_data import fetch_price_data
 from calculate_indicators import add_technical_indicators
 from calculate_volume_features import calculate_volume_features
 from fetch_fundamentals import fetch_fundamentals
-from send_to_chatgpt import send_features_to_gpt
 from config import settings
 from logger import logger
 
 app = FastAPI(
     title="Stock Data Fetching Service",
-    description="Service for fetching and analyzing stock data using Alpha Vantage and OpenAI",
+    description="Service for fetching and analyzing stock data using Alpha Vantage",
     version="1.0.0"
 )
 
@@ -30,36 +29,32 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-class StockAnalysisRequest(BaseModel):
+class StockDataRequest(BaseModel):
     symbol: str
     timeframe: Optional[str] = settings.DEFAULT_TIMEFRAME
 
-class StockAnalysisResponse(BaseModel):
+class StockDataResponse(BaseModel):
     symbol: str
-    analysis: Dict[str, Any]
     technical_indicators: Dict[str, float]
     volume_features: Dict[str, float]
     fundamentals: Dict[str, Any]
-    gpt_analysis: str
 
 @app.get("/health")
 async def health_check():
     """Health check endpoint"""
     return {"status": "healthy", "service": settings.SERVICE_NAME}
 
-@app.post("/analyze", response_model=StockAnalysisResponse)
-async def analyze_stock(request: StockAnalysisRequest):
+@app.post("/fetch", response_model=StockDataResponse)
+async def fetch_stock_data(request: StockDataRequest):
     """
-    Analyze a stock using technical indicators, volume features, and GPT analysis
+    Fetch stock data including technical indicators, volume features, and fundamentals
     """
     try:
-        logger.info(f"Starting analysis for symbol: {request.symbol}")
+        logger.info(f"Starting data fetch for symbol: {request.symbol}")
         
         # Fetch price data
         df = fetch_price_data(request.symbol, settings.ALPHA_VANTAGE_API_KEY)
         logger.info(f"Raw price data shape: {df.shape}")
-        logger.info(f"Price data columns: {df.columns.tolist()}")
-        logger.info(f"First few rows of price data:\n{df.head().to_string()}")
         
         if df.empty:
             raise HTTPException(status_code=404, detail=f"No data found for symbol {request.symbol}")
@@ -70,7 +65,6 @@ async def analyze_stock(request: StockAnalysisRequest):
         try:
             df = add_technical_indicators(df)
             logger.info(f"Technical indicators added. New columns: {df.columns.tolist()}")
-            logger.info(f"Technical indicators sample:\n{df.tail().to_string()}")
         except Exception as e:
             logger.error(f"Error calculating technical indicators: {str(e)}")
             raise HTTPException(status_code=500, detail=f"Error calculating technical indicators: {str(e)}")
@@ -107,39 +101,19 @@ async def analyze_stock(request: StockAnalysisRequest):
             logger.error(f"Error preparing technical indicators: {str(e)}")
             raise HTTPException(status_code=500, detail=f"Error preparing technical indicators: {str(e)}")
         
-        # Prepare final payload for GPT
-        final_payload = {
-            "symbol": request.symbol,
-            **technical_indicators,
-            **volume_features,
-            **fundamentals
-        }
-        logger.info(f"Final payload prepared: {final_payload}")
+        logger.info(f"Successfully completed data fetch for {request.symbol}")
         
-        # Get GPT analysis
-        try:
-            gpt_response = send_features_to_gpt(final_payload, settings.OPENAI_API_KEY)
-            logger.info(f"GPT analysis received: {gpt_response[:200]}...")  # Log first 200 chars
-        except Exception as e:
-            logger.error(f"Error getting GPT analysis: {str(e)}")
-            raise HTTPException(status_code=500, detail=f"Error getting GPT analysis: {str(e)}")
-        
-        logger.info(f"Successfully completed analysis for {request.symbol}")
-        
-        response = StockAnalysisResponse(
+        response = StockDataResponse(
             symbol=request.symbol,
-            analysis=final_payload,
             technical_indicators=technical_indicators,
             volume_features=volume_features,
-            fundamentals=fundamentals,
-            gpt_analysis=gpt_response
+            fundamentals=fundamentals
         )
-        logger.info(f"Response prepared: {response}")
         return response
         
     except Exception as e:
-        logger.error(f"Error analyzing stock {request.symbol}: {str(e)}")
-        logger.exception("Full traceback:")  # This will log the full stack trace
+        logger.error(f"Error fetching stock data for {request.symbol}: {str(e)}")
+        logger.exception("Full traceback:")
         raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":

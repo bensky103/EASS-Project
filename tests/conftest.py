@@ -1,6 +1,18 @@
 # tests/conftest.py
 import pytest, socket, time, subprocess
 import httpx
+import asyncio
+from typing import Generator, AsyncGenerator
+from fastapi.testclient import TestClient
+from httpx import AsyncClient
+import os
+import sys
+
+# Add the project root to the Python path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from stock_data_fetching.main import app as stock_app
+from llm_service.main import app as llm_app
 
 COMPOSE_FILE = "docker-compose.yml"
 

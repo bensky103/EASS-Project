@@ -2,6 +2,21 @@
 
 services:
 
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    restart: unless-stopped
+    command: serve
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/version"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
   mongo:
     image: mongo:6
     container_name: mongo
@@ -67,6 +82,32 @@ services:
       timeout: 2s
       retries: 5
 
+  llm_service:
+    build:
+      context: .
+      dockerfile: llm_service/Dockerfile
+    working_dir: /app
+    container_name: llm_service
+    ports:
+      - "8003:8003"
+    volumes:
+      - ./llm_service:/app
+    env_file:
+      - .env
+    depends_on:
+      ollama:
+        condition: service_healthy
+    environment:
+      - OLLAMA_API_URL=http://ollama:11434/api/generate
+    healthcheck:
+      test: ["CMD", "python3", "-c",
+         "import sys, urllib.request as r; \
+          sys.exit(0 if r.urlopen('http://localhost:8003/health').getcode()==200 else 1)"]
+      interval: 5s
+      timeout: 2s
+      retries: 5
+    restart: unless-stopped
+
   tests:
     build:
       context: .
@@ -74,14 +115,17 @@ services:
     working_dir: /code
     container_name: tests
     depends_on:
-     auth:
-       condition: service_healthy
-     stock_data_fetching:
-       condition: service_completed_successfully
+      auth:
+        condition: service_healthy
+      stock_data_fetching:
+        condition: service_completed_successfully
+      llm_service:
+        condition: service_healthy
     restart: "no"
     env_file:
       - .env
 
 volumes:
   mongo_data:
+  ollama_data:
 
