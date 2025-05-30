@@ -1,0 +1,29 @@
+/home/guyben/EASS-Project/.venv/lib/python3.12/site-packages/_pytest/config/__init__.py:331: PluggyTeardownRaisedWarning: A plugin raised an exception during an old-style hookwrapper teardown.
+Plugin: helpconfig, Hook: pytest_cmdline_parse
+ConftestImportFailure: ValidationError: 2 validation errors for Settings
+OLLAMA_API_URL
+  Extra inputs are not permitted [type=extra_forbidden, input_value='http://localhost:11434/api/generate', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/extra_forbidden
+OLLAMA_MODEL
+  Extra inputs are not permitted [type=extra_forbidden, input_value='llama3', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/extra_forbidden (from /home/guyben/EASS-Project/tests/conftest.py)
+For more information see https://pluggy.readthedocs.io/en/stable/api_reference.html#pluggy.PluggyTeardownRaisedWarning
+  config = pluginmanager.hook.pytest_cmdline_parse(
+ImportError while loading conftest '/home/guyben/EASS-Project/tests/conftest.py'.
+tests/conftest.py:14: in <module>
+    from stock_data_fetching.main import app as stock_app
+stock_data_fetching/main.py:14: in <module>
+    from .config import settings
+stock_data_fetching/config.py:37: in <module>
+    settings = get_settings()
+stock_data_fetching/config.py:35: in get_settings
+    return Settings()
+.venv/lib/python3.12/site-packages/pydantic_settings/main.py:176: in __init__
+    super().__init__(
+E   pydantic_core._pydantic_core.ValidationError: 2 validation errors for Settings
+E   OLLAMA_API_URL
+E     Extra inputs are not permitted [type=extra_forbidden, input_value='http://localhost:11434/api/generate', input_type=str]
+E       For further information visit https://errors.pydantic.dev/2.11/v/extra_forbidden
+E   OLLAMA_MODEL
+E     Extra inputs are not permitted [type=extra_forbidden, input_value='llama3', input_type=str]
+E       For further information visit https://errors.pydantic.dev/2.11/v/extra_forbidden
