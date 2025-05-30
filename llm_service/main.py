@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 from typing import Dict, Any, Literal
 import httpx
 import uvicorn
@@ -34,14 +34,16 @@ class StockFeatures(BaseModel):
     rsi: float
     macd: float
 
-    @validator('volume')
-    def validate_volume(cls, v):
+    @field_validator('volume')
+    @classmethod
+    def validate_volume(cls, v: int) -> int:
         if v < 0:
             raise ValueError('Volume cannot be negative')
         return v
 
-    @validator('rsi')
-    def validate_rsi(cls, v):
+    @field_validator('rsi')
+    @classmethod
+    def validate_rsi(cls, v: float) -> float:
         if not 0 <= v <= 100:
             raise ValueError('RSI must be between 0 and 100')
         return v
@@ -57,8 +59,9 @@ class PredictionResponse(BaseModel):
     reasoning: str
     timestamp: datetime = Field(default_factory=datetime.utcnow)
 
-    @validator('confidence')
-    def validate_confidence(cls, v):
+    @field_validator('confidence')
+    @classmethod
+    def validate_confidence(cls, v: float) -> float:
         if not 0 <= v <= 1:
             raise ValueError('Confidence must be between 0 and 1')
         return v

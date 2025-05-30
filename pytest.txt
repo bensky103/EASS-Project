@@ -3,50 +3,40 @@ platform linux -- Python 3.12.3, pytest-7.4.3, pluggy-1.6.0 -- /home/guyben/EASS
 cachedir: .pytest_cache
 rootdir: /home/guyben/EASS-Project
 configfile: pytest.ini
-plugins: anyio-3.7.1
-collecting ... collected 18 items / 2 errors
+plugins: asyncio-0.23.2, cov-4.1.0, anyio-3.7.1
+asyncio: mode=Mode.STRICT
+collecting ... collected 19 items / 1 error
 
 ==================================== ERRORS ====================================
-________________ ERROR collecting tests/unit/auth_unit_test.py _________________
-ImportError while importing test module '/home/guyben/EASS-Project/tests/unit/auth_unit_test.py'.
-Hint: make sure your test modules/packages have valid Python names.
-Traceback:
-/usr/lib/python3.12/importlib/__init__.py:90: in import_module
-    return _bootstrap._gcd_import(name[level:], package, level)
-tests/unit/auth_unit_test.py:1: in <module>
-    from auth_service.security import hash_password, verify_password
-auth_service/security.py:1: in <module>
-    import os, jwt, time
-E   ModuleNotFoundError: No module named 'jwt'
 ________________ ERROR collecting tests/unit/stock_unit_test.py ________________
 ImportError while importing test module '/home/guyben/EASS-Project/tests/unit/stock_unit_test.py'.
 Hint: make sure your test modules/packages have valid Python names.
 Traceback:
 /usr/lib/python3.12/importlib/__init__.py:90: in import_module
     return _bootstrap._gcd_import(name[level:], package, level)
-tests/unit/stock_unit_test.py:3: in <module>
-    from stock_service.routes import stock as stock_route   # adjust if path differs
-E   ModuleNotFoundError: No module named 'stock_service'
+tests/unit/stock_unit_test.py:5: in <module>
+    from yfinance import Ticker
+E   ModuleNotFoundError: No module named 'yfinance'
 =============================== warnings summary ===============================
 .venv/lib/python3.12/site-packages/pandas_ta/__init__.py:7
   /home/guyben/EASS-Project/.venv/lib/python3.12/site-packages/pandas_ta/__init__.py:7: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
     from pkg_resources import get_distribution, DistributionNotFound
 
-.venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:323
-.venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:323
-  /home/guyben/EASS-Project/.venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:323: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.11/migration/
+.venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:271
+.venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:271
+  /home/guyben/EASS-Project/.venv/lib/python3.12/site-packages/pydantic/_internal/_config.py:271: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.5/migration/
     warnings.warn(DEPRECATION_MESSAGE, DeprecationWarning)
 
 llm_service/main.py:37
-  /home/guyben/EASS-Project/llm_service/main.py:37: PydanticDeprecatedSince20: Pydantic V1 style `@validator` validators are deprecated. You should migrate to Pydantic V2 style `@field_validator` validators, see the migration guide for more details. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.11/migration/
+  /home/guyben/EASS-Project/llm_service/main.py:37: PydanticDeprecatedSince20: Pydantic V1 style `@validator` validators are deprecated. You should migrate to Pydantic V2 style `@field_validator` validators, see the migration guide for more details. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.5/migration/
     @validator('volume')
 
 llm_service/main.py:43
-  /home/guyben/EASS-Project/llm_service/main.py:43: PydanticDeprecatedSince20: Pydantic V1 style `@validator` validators are deprecated. You should migrate to Pydantic V2 style `@field_validator` validators, see the migration guide for more details. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.11/migration/
+  /home/guyben/EASS-Project/llm_service/main.py:43: PydanticDeprecatedSince20: Pydantic V1 style `@validator` validators are deprecated. You should migrate to Pydantic V2 style `@field_validator` validators, see the migration guide for more details. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.5/migration/
     @validator('rsi')
 
 llm_service/main.py:60
-  /home/guyben/EASS-Project/llm_service/main.py:60: PydanticDeprecatedSince20: Pydantic V1 style `@validator` validators are deprecated. You should migrate to Pydantic V2 style `@field_validator` validators, see the migration guide for more details. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.11/migration/
+  /home/guyben/EASS-Project/llm_service/main.py:60: PydanticDeprecatedSince20: Pydantic V1 style `@validator` validators are deprecated. You should migrate to Pydantic V2 style `@field_validator` validators, see the migration guide for more details. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.5/migration/
     @validator('confidence')
 
 .venv/lib/python3.12/site-packages/_pytest/config/__init__.py:1373
@@ -54,41 +44,12 @@ llm_service/main.py:60
   
     self._warn_or_fail_if_strict(f"Unknown config option: {key}\n")
 
-tests/test_llm_service.py:50
-  /home/guyben/EASS-Project/tests/test_llm_service.py:50: PytestUnknownMarkWarning: Unknown pytest.mark.asyncio - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
-    @pytest.mark.asyncio
-
-tests/test_llm_service.py:75
-  /home/guyben/EASS-Project/tests/test_llm_service.py:75: PytestUnknownMarkWarning: Unknown pytest.mark.asyncio - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
-    @pytest.mark.asyncio
-
-tests/integration/test_stock_data_fetching_integration.py:12
-  /home/guyben/EASS-Project/tests/integration/test_stock_data_fetching_integration.py:12: PytestUnknownMarkWarning: Unknown pytest.mark.asyncio - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
-    @pytest.mark.asyncio
-
-tests/integration/test_stock_data_fetching_integration.py:50
-  /home/guyben/EASS-Project/tests/integration/test_stock_data_fetching_integration.py:50: PytestUnknownMarkWarning: Unknown pytest.mark.asyncio - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
-    @pytest.mark.asyncio
-
-tests/integration/test_stock_data_fetching_integration.py:60
-  /home/guyben/EASS-Project/tests/integration/test_stock_data_fetching_integration.py:60: PytestUnknownMarkWarning: Unknown pytest.mark.asyncio - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
-    @pytest.mark.asyncio
-
-tests/integration/test_stock_data_fetching_integration.py:70
-  /home/guyben/EASS-Project/tests/integration/test_stock_data_fetching_integration.py:70: PytestUnknownMarkWarning: Unknown pytest.mark.asyncio - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
-    @pytest.mark.asyncio
-
-tests/integration/test_stock_data_fetching_integration.py:89
-  /home/guyben/EASS-Project/tests/integration/test_stock_data_fetching_integration.py:89: PytestUnknownMarkWarning: Unknown pytest.mark.asyncio - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
-    @pytest.mark.asyncio
-
-tests/integration/test_stock_data_fetching_integration.py:108
-  /home/guyben/EASS-Project/tests/integration/test_stock_data_fetching_integration.py:108: PytestUnknownMarkWarning: Unknown pytest.mark.asyncio - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
-    @pytest.mark.asyncio
+.venv/lib/python3.12/site-packages/passlib/utils/__init__.py:854
+  /home/guyben/EASS-Project/.venv/lib/python3.12/site-packages/passlib/utils/__init__.py:854: DeprecationWarning: 'crypt' is deprecated and slated for removal in Python 3.13
+    from crypt import crypt as _crypt
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
 =========================== short test summary info ============================
-ERROR tests/unit/auth_unit_test.py
 ERROR tests/unit/stock_unit_test.py
-!!!!!!!!!!!!!!!!!!! Interrupted: 2 errors during collection !!!!!!!!!!!!!!!!!!!!
-======================== 15 warnings, 2 errors in 0.39s ========================
+!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+========================= 8 warnings, 1 error in 0.32s =========================
