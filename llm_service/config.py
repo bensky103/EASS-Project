@@ -9,6 +9,9 @@ class Settings(BaseSettings):
     HOST: str = "0.0.0.0"
     PORT: int = 8003
     
+    # API Keys
+    ALPHA_VANTAGE_API_KEY: str = ""
+    
     # Ollama settings
     OLLAMA_API_URL: str = "http://localhost:11434/api/generate"
     OLLAMA_MODEL: str = "llama3"
