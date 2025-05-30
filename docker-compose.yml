@@ -1,52 +1,79 @@
 #docker-compose.yml
 
+version: '3.8'
+
 services:
 
   ollama:
     image: ollama/ollama:latest
-    container_name: ollama
+    container_name: eass_ollama
     ports:
       - "11434:11434"
     volumes:
-      - ollama_data:/root/.ollama
+      - type: volume
+        source: ollama_data
+        target: /root/.ollama
+      - type: bind
+        source: ./ollama-healthcheck.sh
+        target: /usr/local/bin/healthcheck.sh
     restart: unless-stopped
     command: serve
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:11434/api/version"]
-      interval: 30s
-      timeout: 10s
+      test: ["CMD", "sh", "/usr/local/bin/healthcheck.sh"]
+      interval: 10s
+      timeout: 5s
       retries: 3
+      start_period: 20s
+    environment:
+      - OLLAMA_HOST=http://0.0.0.0:11434
+      - OLLAMA_ORIGINS=*
 
   mongo:
     image: mongo:6
-    container_name: mongo
+    container_name: eass_mongo
     restart: unless-stopped
     ports:
       - "27017:27017"
     volumes:
-      - mongo_data:/data/db
+      - type: volume
+        source: mongo_data
+        target: /data/db
     env_file:
       - .env
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
   
   redis:
     image: redis:7-alpine
-    container_name: redis
+    container_name: eass_redis
     restart: unless-stopped
     ports:
-      - "6379:6379"
+      - "6380:6379"
     env_file:
       - .env
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 2s
+      retries: 5
 
   stock_data_fetching:
     build:
       context: .
       dockerfile: stock_data_fetching/Dockerfile
     working_dir: /app
-    container_name: stock_data_fetching
+    container_name: eass_stock_data
     ports:
       - "8002:8000"
     volumes:
-      - ./stock_data_fetching:/app
+      - type: bind
+        source: ./stock_data_fetching
+        target: /app/stock_data_fetching
+        consistency: delegated
     env_file:
       - .env
     healthcheck:
@@ -63,15 +90,19 @@ services:
       context: .
       dockerfile: auth_service/Dockerfile
     working_dir: /app
-    container_name: auth_service
+    container_name: eass_auth
     volumes:
-      - ./auth_service:/app/auth_service
+      - type: bind
+        source: ./auth_service
+        target: /app/auth_service
     ports:
       - "8001:8001"
     command: uvicorn auth_service.main:app --host 0.0.0.0 --port 8001
     depends_on:
-      - redis
-      - mongo
+      redis:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
     env_file:
       - .env
     healthcheck:
@@ -81,31 +112,41 @@ services:
       interval: 5s
       timeout: 2s
       retries: 5
+      start_period: 10s
 
   llm_service:
     build:
       context: .
       dockerfile: llm_service/Dockerfile
     working_dir: /app
-    container_name: llm_service
+    container_name: eass_llm
     ports:
       - "8003:8003"
     volumes:
-      - ./llm_service:/app
+      - type: bind
+        source: ./llm_service
+        target: /app/llm_service
+        consistency: delegated
     env_file:
       - .env
     depends_on:
       ollama:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     environment:
-      - OLLAMA_API_URL=http://ollama:11434/api/generate
+      - OLLAMA_API_URL=http://eass_ollama:11434/api/generate
+      - REDIS_URL=redis://eass_redis:6379
+      - OLLAMA_RETRY_ATTEMPTS=5
+      - OLLAMA_RETRY_DELAY=10
     healthcheck:
       test: ["CMD", "python3", "-c",
          "import sys, urllib.request as r; \
           sys.exit(0 if r.urlopen('http://localhost:8003/health').getcode()==200 else 1)"]
-      interval: 5s
-      timeout: 2s
+      interval: 10s
+      timeout: 5s
       retries: 5
+      start_period: 30s
     restart: unless-stopped
 
   tests:
@@ -113,12 +154,12 @@ services:
       context: .
       dockerfile: tests/Dockerfile
     working_dir: /code
-    container_name: tests
+    container_name: eass_tests
     depends_on:
       auth:
         condition: service_healthy
       stock_data_fetching:
-        condition: service_completed_successfully
+        condition: service_healthy
       llm_service:
         condition: service_healthy
     restart: "no"

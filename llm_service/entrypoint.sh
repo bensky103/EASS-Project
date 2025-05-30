@@ -12,4 +12,4 @@ curl -X POST http://ollama:11434/api/pull -d '{"name": "llama3"}'
 
 # Start the FastAPI service
 echo "Starting LLM service..."
-exec uvicorn main:app --host 0.0.0.0 --port 8003 
+exec uvicorn llm_service.main:app --host 0.0.0.0 --port 8003

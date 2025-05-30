@@ -1,6 +1,6 @@
 import logging
 from pythonjsonlogger import jsonlogger
-from .config import settings
+from stock_data_fetching.config import settings
 import sys
 
 def setup_logger():

@@ -17,7 +17,8 @@ from llm_service.main import app as llm_app
 COMPOSE_FILE = "docker-compose.yml"
 
 def wait_for_http_service(service: str, port: int, endpoint: str = "/health", timeout: int = 30):
-    base_url = f"http://localhost:{port}"  # Changed to use localhost
+    # Use service name instead of localhost for Docker networking
+    base_url = f"http://{service}:{port}"
     start_time = time.time()
     while True:
         try:
@@ -32,8 +33,8 @@ def wait_for_http_service(service: str, port: int, endpoint: str = "/health", ti
 @pytest.fixture(scope="session", autouse=True)
 def _stack_up_and_wait():
     wait_for_http_service("auth", 8001)
-    wait_for_http_service("stock", 8002)
-    wait_for_http_service("model", 8000)
+    wait_for_http_service("stock_data_fetching", 8000)  # Changed port to match service
+    wait_for_http_service("llm_service", 8003)  # Changed port to match service
     yield
     
 

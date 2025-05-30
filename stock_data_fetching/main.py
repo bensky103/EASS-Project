@@ -7,12 +7,12 @@ from typing import Dict, Any, Optional
 import uvicorn
 import pandas as pd
 
-from .fetch_price_data import fetch_price_data
-from .calculate_indicators import add_technical_indicators
-from .calculate_volume_features import calculate_volume_features
-from .fetch_fundamentals import fetch_fundamentals
-from .config import settings
-from .logger import logger
+from stock_data_fetching.fetch_price_data import fetch_price_data
+from stock_data_fetching.calculate_indicators import add_technical_indicators
+from stock_data_fetching.calculate_volume_features import calculate_volume_features
+from stock_data_fetching.fetch_fundamentals import fetch_fundamentals
+from stock_data_fetching.config import settings
+from stock_data_fetching.logger import logger
 
 app = FastAPI(
     title="Stock Data Fetching Service",
