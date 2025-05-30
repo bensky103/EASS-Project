@@ -1,8 +1,1 @@
-fastapi
-uvicorn[standard]
-pydantic[email]
-email-validator
-motor
-passlib[bcrypt]
-pyjwt
-redis
+-r ../requirements.txt
