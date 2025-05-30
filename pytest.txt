@@ -1,13 +1,23 @@
 /home/guyben/EASS-Project/.venv/lib/python3.12/site-packages/_pytest/config/__init__.py:331: PluggyTeardownRaisedWarning: A plugin raised an exception during an old-style hookwrapper teardown.
 Plugin: helpconfig, Hook: pytest_cmdline_parse
-ConftestImportFailure: ModuleNotFoundError: No module named 'config' (from /home/guyben/EASS-Project/tests/conftest.py)
+ConftestImportFailure: ValidationError: 1 validation error for Settings
+ALPHA_VANTAGE_API_KEY
+  Extra inputs are not permitted [type=extra_forbidden, input_value='41GVL0Q7COE8JUS3', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.11/v/extra_forbidden (from /home/guyben/EASS-Project/tests/conftest.py)
 For more information see https://pluggy.readthedocs.io/en/stable/api_reference.html#pluggy.PluggyTeardownRaisedWarning
   config = pluginmanager.hook.pytest_cmdline_parse(
 ImportError while loading conftest '/home/guyben/EASS-Project/tests/conftest.py'.
-tests/conftest.py:14: in <module>
-    from stock_data_fetching.main import app as stock_app
-stock_data_fetching/main.py:15: in <module>
-    from .logger import logger
-stock_data_fetching/logger.py:3: in <module>
-    from config import settings
-E   ModuleNotFoundError: No module named 'config'
+tests/conftest.py:15: in <module>
+    from llm_service.main import app as llm_app
+llm_service/main.py:9: in <module>
+    from .config import settings
+llm_service/config.py:29: in <module>
+    settings = get_settings()
+llm_service/config.py:27: in get_settings
+    return Settings()
+.venv/lib/python3.12/site-packages/pydantic_settings/main.py:176: in __init__
+    super().__init__(
+E   pydantic_core._pydantic_core.ValidationError: 1 validation error for Settings
+E   ALPHA_VANTAGE_API_KEY
+E     Extra inputs are not permitted [type=extra_forbidden, input_value='41GVL0Q7COE8JUS3', input_type=str]
+E       For further information visit https://errors.pydantic.dev/2.11/v/extra_forbidden
