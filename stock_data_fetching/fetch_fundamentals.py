@@ -29,9 +29,6 @@ def fetch_fundamentals(symbol: str, api_key: str) -> dict:
         "pe_ratio": float(overview.get("PERatio", 0.0)),
         "dividend_yield": float(overview.get("DividendYield", 0.0)),
         "beta": float(overview.get("Beta", 0.0)),
-        "eps": eps,
-        "next_earnings": next_earnings,
-        "latest_earnings": latest_report
     }
     
     print("\n=== Fundamental Data ===")

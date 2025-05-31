@@ -44,7 +44,7 @@ async def test_get_stock_success(monkeypatch, ok_payload):
                 'Date': [time.strftime("%Y-%m-%d", time.localtime(ok_payload["t"][0]))]
             }
     
-    monkeypatch.setattr(stock_app, "Ticker", lambda x: MockTicker())
+    monkeypatch.setattr("yfinance.Ticker", lambda x: MockTicker())
     
     result = await stock_app.get_stock("AAPL")
     assert isinstance(result, list)
@@ -63,7 +63,7 @@ async def test_get_stock_not_found(monkeypatch, bad_payload):
         def history(self, period):
             raise HTTPException(status_code=404, detail=f"Stock ZZZZ not found")
     
-    monkeypatch.setattr(stock_app, "Ticker", lambda x: MockTicker())
+    monkeypatch.setattr("yfinance.Ticker", lambda x: MockTicker())
 
     with pytest.raises(HTTPException) as exc:
         await stock_app.get_stock("ZZZZ")

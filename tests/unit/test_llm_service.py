@@ -77,7 +77,8 @@ async def test_predict_mock_ollama(sample_stock_features):
 async def test_predict_ollama_unavailable(sample_stock_features):
     """Test prediction endpoint when Ollama is unavailable."""
     async def mock_call_ollama(x):
-        raise Exception("Connection refused")
+        import httpx
+        raise httpx.ConnectError()
     with pytest.MonkeyPatch.context() as m:
         m.setattr("llm_service.main.call_ollama", mock_call_ollama)
         async with AsyncClient(app=app, base_url="http://test") as ac:

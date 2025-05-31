@@ -3,7 +3,7 @@
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, Union
 import uvicorn
 import pandas as pd
 
@@ -36,7 +36,7 @@ class StockDataRequest(BaseModel):
 class StockDataResponse(BaseModel):
     symbol: str
     technical_indicators: Dict[str, float]
-    volume_features: Dict[str, float]
+    volume_features: Dict[str, Union[float, str]]
     fundamentals: Dict[str, Any]
 
 @app.get("/health")
@@ -110,7 +110,8 @@ async def fetch_stock_data(request: StockDataRequest):
             fundamentals=fundamentals
         )
         return response
-        
+    except HTTPException as e:
+        raise e
     except Exception as e:
         logger.error(f"Error fetching stock data for {request.symbol}: {str(e)}")
         logger.exception("Full traceback:")
