@@ -17,6 +17,13 @@ class Settings(BaseSettings):
     OLLAMA_MODEL: str = "llama3"
     OLLAMA_TIMEOUT: int = 30
     
+    # Auth/JWT settings (added to match .env)
+    JWT_SECRET: str = os.getenv("JWT_SECRET", "")
+    JWT_ALGORITHM: str = os.getenv("JWT_ALGORITHM", "")
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "60"))
+    MONGO_URI: str = os.getenv("MONGO_URI", "")
+    
+    
     # Logging settings
     LOG_LEVEL: str = "INFO"
     
