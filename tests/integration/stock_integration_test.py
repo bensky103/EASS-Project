@@ -1,6 +1,6 @@
 import httpx, pytest, time
 
-BASE = "http://localhost:8002"
+BASE = "http://stock_data_fetching:8000"
 
 def test_stock_endpoint_live():
     r = httpx.post(f"{BASE}/fetch", json={"symbol": "AAPL", "timeframe": "daily"})

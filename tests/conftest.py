@@ -20,33 +20,43 @@ def wait_for_http_service(service: str, port: int, endpoint: str = "/health", ti
     # Use service name instead of localhost for Docker networking
     base_url = f"http://{service}:{port}"
     start_time = time.time()
+    print(f"Waiting for service {service} on {base_url}{endpoint} for {timeout}s...")
     while True:
         try:
-            response = httpx.get(f"{base_url}{endpoint}")
-            if response.status_code == 200:
-                return
-        except (httpx.RequestError, ConnectionError):
+            response = httpx.get(f"{base_url}{endpoint}", timeout=5)
+            response.raise_for_status()
+            print(f"Service {service}:{port}{endpoint} responded with {response.status_code}. Ready.")
+            return
+        except httpx.TransportError as e:
             if time.time() - start_time > timeout:
-                pytest.exit(f"Service {service} on port {port} never became ready")
+                print(f"Timeout waiting for {service}:{port}{endpoint}. Last transport error: {e}")
+                pytest.exit(f"Service {service} on port {port} (endpoint {endpoint}) never became ready. Last transport error: {e}")
+            time.sleep(1)
+        except Exception as e:
+            if time.time() - start_time > timeout:
+                print(f"Timeout waiting for {service}:{port}{endpoint}. Last unexpected error: {e}")
+                pytest.exit(f"Service {service} on port {port} (endpoint {endpoint}) failed with unexpected error: {e}")
             time.sleep(1)
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="session", autouse=True)
 def _stack_up_and_wait():
-    wait_for_http_service("eass_auth", 8001)
+    print("Starting service readiness checks...")
+    wait_for_http_service("auth", 8001)
     wait_for_http_service("stock_data_fetching", 8000)
     wait_for_http_service("llm_service", 8003)
+    print("All services reported ready.")
     yield
 
 # ── 2. sync client (simple tests) ───────────────────────────────────
 @pytest.fixture
 def http():
     """Synchronous httpx client (handy for simple GET/POST)."""
-    with httpx.Client(base_url="http://localhost:8001") as c:
+    with httpx.Client(base_url="http://auth:8001") as c:
         yield c
 
 
 # ── 3. async client (pytest‑asyncio tests) ──────────────────────────
 @pytest.fixture
 async def ahttp():
-    async with httpx.AsyncClient(base_url="http://localhost:8001") as c:
+    async with httpx.AsyncClient(base_url="http://auth:8001") as c:
         yield c
