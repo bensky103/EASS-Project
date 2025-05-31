@@ -54,7 +54,7 @@ async def fetch_stock_data(request: StockDataRequest):
         logger.info(f"Starting data fetch for symbol: {request.symbol}")
         
         # Fetch price data
-        df = fetch_price_data(request.symbol, settings.ALPHA_VANTAGE_API_KEY)
+        df = fetch_price_data(request.symbol, settings.ALPHA_VANTAGE_API_KEY, date=request.date)
         logger.info(f"Raw price data shape: {df.shape}")
         
         if df.empty:

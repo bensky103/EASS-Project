@@ -2,8 +2,10 @@ import requests
 import pandas as pd
 from datetime import datetime
 
-def fetch_price_data(symbol: str, api_key: str, days: int = 30) -> pd.DataFrame:
-    url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={symbol}&outputsize=compact&apikey={api_key}"
+def fetch_price_data(symbol: str, api_key: str, days: int = 30, date: str = None) -> pd.DataFrame:
+    # If a date is provided, fetch full history to ensure the date is included
+    outputsize = "full" if date else "compact"
+    url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={symbol}&outputsize={outputsize}&apikey={api_key}"
     data = requests.get(url).json()
     ts = data.get("Time Series (Daily)", {})
     if not ts:
@@ -18,7 +20,9 @@ def fetch_price_data(symbol: str, api_key: str, days: int = 30) -> pd.DataFrame:
     ])
     if df.empty or "date" not in df.columns:
         return pd.DataFrame()
-    df = df.sort_values("date", ascending=True).tail(days).reset_index(drop=True)
+    df = df.sort_values("date", ascending=True).reset_index(drop=True)
+    if not date:
+        df = df.tail(days).reset_index(drop=True)
 
     # Ensure we use the latest available trading day if today is not a trading day
     today = datetime.utcnow().date()
