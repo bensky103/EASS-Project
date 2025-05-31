@@ -32,7 +32,7 @@ def wait_for_http_service(service: str, port: int, endpoint: str = "/health", ti
 
 @pytest.fixture(scope="session")
 def _stack_up_and_wait():
-    wait_for_http_service("auth", 8001)
+    wait_for_http_service("eass_auth", 8001)
     wait_for_http_service("stock_data_fetching", 8000)
     wait_for_http_service("llm_service", 8003)
     yield
