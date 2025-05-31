@@ -51,7 +51,7 @@ def test_fetch_stock_data_invalid_symbol():
     response = client.post("/fetch", json={"symbol": "INVALID", "timeframe": "daily"})
     assert response.status_code == 404
 
-@patch('stock_data_fetching.fetch_price_data.fetch_price_data')
+@patch('stock_data_fetching.main.fetch_price_data')
 @patch('stock_data_fetching.calculate_indicators.add_technical_indicators')
 @patch('stock_data_fetching.calculate_volume_features.calculate_volume_features')
 @patch('stock_data_fetching.fetch_fundamentals.fetch_fundamentals')
