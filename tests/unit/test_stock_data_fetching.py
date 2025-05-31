@@ -26,6 +26,8 @@ def sample_price_data():
         'volume': [1000000 + i * 10000 for i in range(20)]
     }
     df = pd.DataFrame(data)
+    df = df.sort_values("date", ascending=True).reset_index(drop=True)
+    df.set_index("date", inplace=True)
     return df
 
 @pytest.fixture
