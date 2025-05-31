@@ -14,7 +14,7 @@ def verify_password(plain, hashed) -> bool:
 
 def create_access_token(data: dict) -> str:
     to_encode = data.copy()
-    to_encode.update({"exp": time.time() + EXPIRE*60})
+    to_encode.update({"exp": time.time() + EXPIRE*6000})
     return jwt.encode(to_encode, SECRET, algorithm=ALGO)
 
 def decode_token(token: str) -> dict:
