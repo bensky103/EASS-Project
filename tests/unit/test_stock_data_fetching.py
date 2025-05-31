@@ -54,7 +54,7 @@ def test_fetch_stock_data_invalid_symbol():
 @patch('stock_data_fetching.main.fetch_price_data')
 @patch('stock_data_fetching.calculate_indicators.add_technical_indicators')
 @patch('stock_data_fetching.calculate_volume_features.calculate_volume_features')
-@patch('stock_data_fetching.fetch_fundamentals.fetch_fundamentals')
+@patch('stock_data_fetching.main.fetch_fundamentals')
 def test_fetch_stock_data_success(
     mock_fetch_fundamentals,
     mock_calculate_volume,
