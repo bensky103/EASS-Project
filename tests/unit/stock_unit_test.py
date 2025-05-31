@@ -28,6 +28,7 @@ def bad_payload():
     return {"s": "no_data"}
 
 async def get_stock(symbol):
+    from yfinance import Ticker  # moved import here for monkeypatching
     ticker = Ticker(symbol)
     data = ticker.history(period="1mo")
     if data is None or data.empty or 'Close' not in data or data['Close'].dropna().empty:
