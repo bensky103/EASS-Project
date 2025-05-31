@@ -30,7 +30,7 @@ async def get_stock(symbol):
     # This is a minimal mock for the test, using yfinance.Ticker and httpx.AsyncClient.get as patched by the test
     ticker = Ticker(symbol)
     data = ticker.history(period="1d")
-    if not data or 'Close' not in data or not data['Close']:
+    if data is None or data.empty or 'Close' not in data or not data['Close']:
         raise HTTPException(status_code=404, detail=f"Stock {symbol} not found")
     return [{"date": data['Date'][0], "price": data['Close'][0]}]
 
