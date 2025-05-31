@@ -3,6 +3,7 @@ from types import SimpleNamespace
 from stock_data_fetching.main import app as stock_app
 from fastapi import HTTPException
 from yfinance import Ticker 
+import pandas as pd
 
 # ---------- helpers ----------------------------------------------------------
 
@@ -47,10 +48,10 @@ async def test_get_stock_success(monkeypatch, ok_payload):
     # Mock yfinance Ticker
     class MockTicker:
         def history(self, period):
-            return {
-                'Close': [ok_payload["c"][0]], 
+            return pd.DataFrame({
+                'Close': [ok_payload["c"][0]],
                 'Date': [time.strftime("%Y-%m-%d", time.localtime(ok_payload["t"][0]))]
-            }
+            })
     
     monkeypatch.setattr("yfinance.Ticker", lambda x: MockTicker())
     
