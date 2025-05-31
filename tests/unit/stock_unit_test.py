@@ -28,12 +28,12 @@ def bad_payload():
     return {"s": "no_data"}
 
 async def get_stock(symbol):
-    # This is a minimal mock for the test, using yfinance.Ticker and httpx.AsyncClient.get as patched by the test
     ticker = Ticker(symbol)
-    data = ticker.history(period="1d")
-    if data is None or data.empty or 'Close' not in data or data['Close'].empty:
+    data = ticker.history(period="1mo")
+    if data is None or data.empty or 'Close' not in data or data['Close'].dropna().empty:
         raise HTTPException(status_code=404, detail=f"Stock {symbol} not found")
-    return [{"date": data['Date'].iloc[0], "price": data['Close'].iloc[0]}]
+    latest_row = data.dropna(subset=['Close']).iloc[-1]
+    return [{"date": latest_row['Date'] if 'Date' in latest_row else latest_row.name, "price": latest_row['Close']}]
 
 # ---------- test cases -------------------------------------------------------
 
@@ -50,7 +50,7 @@ async def test_get_stock_success(monkeypatch, ok_payload):
         def history(self, period):
             return pd.DataFrame({
                 'Close': [ok_payload["c"][0]],
-                'Date': [time.strftime("%Y-%m-%d", time.localtime(ok_payload["t"][0]))]
+                'Date': ['2024-05-30']  # Fixed, valid trading day
             })
     
     monkeypatch.setattr("yfinance.Ticker", lambda x: MockTicker())
