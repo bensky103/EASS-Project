@@ -13,8 +13,14 @@ client = TestClient(app)
 
 @pytest.fixture
 def sample_price_data():
-    """Create sample price data for testing."""
-    dates = pd.date_range(start='2024-01-01', periods=20, freq='D')
+    """Create sample price data for testing using hard-coded trading days (business days)."""
+    # Use 20 consecutive business days in January 2024
+    dates = pd.to_datetime([
+        '2024-01-02', '2024-01-03', '2024-01-04', '2024-01-05', '2024-01-08',
+        '2024-01-09', '2024-01-10', '2024-01-11', '2024-01-12', '2024-01-15',
+        '2024-01-16', '2024-01-17', '2024-01-18', '2024-01-19', '2024-01-22',
+        '2024-01-23', '2024-01-24', '2024-01-25', '2024-01-26', '2024-01-29'
+    ])
     data = {
         'open': [100 + i for i in range(20)],
         'high': [105 + i for i in range(20)],
