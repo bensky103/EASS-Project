@@ -3,15 +3,16 @@ FROM python:3.11-slim
 
 WORKDIR /code
 
-# Copy the root requirements file
+# Copy requirements first to leverage Docker cache
 COPY requirements.txt .
-
-# Install dependencies
 RUN pip install -r requirements.txt
 
-ENV PYTHONPATH=/code
+# Copy the entire project
+# COPY . /code/
 
-# Copy the rest of the repo
-COPY . /code
+# Install the package in development mode
+RUN pip install -e .
+
+ENV PYTHONPATH=/code
 
 CMD ["pytest", "-q"]

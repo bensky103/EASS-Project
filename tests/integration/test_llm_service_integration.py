@@ -2,10 +2,9 @@ import httpx, pytest
 
 BASE = "http://localhost:8003"
 
-@pytest.fixture(scope="module", autouse=True)
-def wait_for_llm_service(_stack_up_and_wait):
-    # Ensures the service is up before running tests
-    pass
+# @pytest.fixture(scope="module", autouse=True)
+# def wait_for_llm_service(_stack_up_and_wait):
+#     pass
 
 def test_llm_health():
     r = httpx.get(f"{BASE}/health")

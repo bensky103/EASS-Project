@@ -3,10 +3,9 @@
 FROM python:3.11-slim
 WORKDIR /app
 
-# Copy requirements from root
+# Copy requirements first to leverage Docker cache
 COPY requirements.txt .
-RUN pip install --upgrade pip && \
-    pip install -r requirements.txt    
+RUN pip install -r requirements.txt
 
 # Copy the auth service and install it as a package
 COPY ./auth_service /app/auth_service

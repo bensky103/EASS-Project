@@ -3,6 +3,7 @@ from httpx import AsyncClient
 import os
 from stock_data_fetching.main import app
 from stock_data_fetching.config import settings
+import asyncio
 
 # Test data
 VALID_SYMBOL = "AAPL"

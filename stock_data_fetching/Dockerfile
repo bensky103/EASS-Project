@@ -14,7 +14,7 @@ COPY requirements.txt .
 RUN pip install -r requirements.txt
 
 # Copy the entire project
-COPY . /app/
+- COPY . /app/
 
 # Install the package in development mode
 RUN pip install -e .
