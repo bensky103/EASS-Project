@@ -25,10 +25,10 @@ def fetch_fundamentals(symbol: str, api_key: str) -> dict:
         }
 
     fundamentals = {
-        "market_cap": int(overview.get("Market Capitalization", 0)),
-        "pe_ratio": float(overview.get("PERatio", 0.0)),
-        "dividend_yield": float(overview.get("DividendYield", 0.0)),
-        "beta": float(overview.get("Beta", 0.0)),
+        "market_cap": int(float(overview.get("Market Capitalization", 0) or 0)),
+        "pe_ratio": float(overview.get("PERatio", 0.0) or 0.0),
+        "dividend_yield": float(overview.get("DividendYield", 0.0) or 0.0),
+        "beta": float(overview.get("Beta", 0.0) or 0.0),
     }
     
     print("\n=== Fundamental Data ===")

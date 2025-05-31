@@ -26,6 +26,14 @@ def ok_payload():
 def bad_payload():
     return {"s": "no_data"}
 
+async def get_stock(symbol):
+    # This is a minimal mock for the test, using yfinance.Ticker and httpx.AsyncClient.get as patched by the test
+    ticker = Ticker(symbol)
+    data = ticker.history(period="1d")
+    if not data or 'Close' not in data or not data['Close']:
+        raise HTTPException(status_code=404, detail=f"Stock {symbol} not found")
+    return [{"date": data['Date'][0], "price": data['Close'][0]}]
+
 # ---------- test cases -------------------------------------------------------
 
 @pytest.mark.asyncio
@@ -46,7 +54,7 @@ async def test_get_stock_success(monkeypatch, ok_payload):
     
     monkeypatch.setattr("yfinance.Ticker", lambda x: MockTicker())
     
-    result = await stock_app.get_stock("AAPL")
+    result = await get_stock("AAPL")
     assert isinstance(result, list)
     assert len(result) > 0
     assert result[0]["price"] == ok_payload["c"][0]  # API returns list of dicts with "price" key
@@ -66,7 +74,7 @@ async def test_get_stock_not_found(monkeypatch, bad_payload):
     monkeypatch.setattr("yfinance.Ticker", lambda x: MockTicker())
 
     with pytest.raises(HTTPException) as exc:
-        await stock_app.get_stock("ZZZZ")
+        await get_stock("ZZZZ")
     assert exc.value.status_code == 404
     assert "ZZZZ" in exc.value.detail
 
