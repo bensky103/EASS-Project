@@ -35,11 +35,19 @@ def fetch_fundamentals(symbol: str, api_key: str) -> dict:
         except (TypeError, ValueError):
             return default
 
+    # Helper to get value from either root or 'Global Quote'
+    def get_val(key, default=None):
+        if key in overview:
+            return overview.get(key, default)
+        if 'Global Quote' in overview and key in overview['Global Quote']:
+            return overview['Global Quote'].get(key, default)
+        return default
+
     fundamentals = {
-        "market_cap": safe_int(overview.get("Market Capitalization", 0)),
-        "pe_ratio": safe_float(overview.get("PERatio", 0.0)),
-        "dividend_yield": safe_float(overview.get("DividendYield", 0.0)),
-        "beta": safe_float(overview.get("Beta", 0.0)),
+        "market_cap": safe_int(get_val("Market Capitalization", 0)),
+        "pe_ratio": safe_float(get_val("PERatio", 0.0)),
+        "dividend_yield": safe_float(get_val("DividendYield", 0.0)),
+        "beta": safe_float(get_val("Beta", 0.0)),
     }
     
     print("\n=== Fundamental Data ===")
