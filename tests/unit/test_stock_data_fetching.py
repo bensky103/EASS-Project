@@ -78,12 +78,16 @@ def test_fetch_stock_data_success(
         bb_middle=100,
         bb_lower=95
     )
+    mock_add_indicators.return_value.index = sample_price_data.index
     mock_calculate_volume.return_value = {
         "volume_sma": 1000000,
         "volume_ratio": 1.2,
         "volume_trend": "increasing"
     }
     mock_fetch_fundamentals.return_value = sample_fundamentals
+
+    print("SAMPLE PRICE DATA:")
+    print(sample_price_data)
 
     response = client.post("/fetch", json={"symbol": "AAPL", "timeframe": "daily"})
     
