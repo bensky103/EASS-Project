@@ -28,6 +28,12 @@ class Settings(BaseSettings):
     DEFAULT_SYMBOL: str = "AAPL"
     DEFAULT_TIMEFRAME: str = "daily"
     
+    # Auth/JWT settings (added to match .env)
+    JWT_SECRET: str = os.getenv("JWT_SECRET", "")
+    JWT_ALGORITHM: str = os.getenv("JWT_ALGORITHM", "")
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "60"))
+    MONGO_URI: str = os.getenv("MONGO_URI", "")
+    
     class Config:
         env_file = ".env"
         case_sensitive = True
