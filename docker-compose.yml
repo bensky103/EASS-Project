@@ -68,7 +68,7 @@ services:
     working_dir: /app
     container_name: eass_stock_data
     ports:
-      - "8002:8000"
+      - "8002:8002"
     volumes:
       - type: bind
         source: ./stock_data_fetching
