@@ -38,14 +38,14 @@ def wait_for_http_service(service: str, port: int, endpoint: str = "/health", ti
                 pytest.exit(f"Service {service} on port {port} (endpoint {endpoint}) failed with unexpected error: {e}")
             time.sleep(1)
 
-@pytest.fixture(scope="session", autouse=True)
-def _stack_up_and_wait():
-    print("Starting service readiness checks...")
-    wait_for_http_service("auth", 8001)
-    wait_for_http_service("stock_data_fetching", 8000)
-    wait_for_http_service("llm_service", 8003)
-    print("All services reported ready.")
-    yield
+# @pytest.fixture(scope="session", autouse=True)
+# def _stack_up_and_wait():
+#     print("Starting service readiness checks...")
+#     wait_for_http_service("eass_auth", 8001, timeout=60)
+#     wait_for_http_service("stock_data_fetching", 8000)
+#     wait_for_http_service("llm_service", 8003)
+#     print("All services reported ready.")
+#     yield
 
 # ── 2. sync client (simple tests) ───────────────────────────────────
 @pytest.fixture

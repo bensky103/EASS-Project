@@ -32,6 +32,7 @@ app.add_middleware(
 class StockDataRequest(BaseModel):
     symbol: str
     timeframe: Optional[str] = settings.DEFAULT_TIMEFRAME
+    date: Optional[str] = None  # New: Accept date as 'YYYY-MM-DD'
 
 class StockDataResponse(BaseModel):
     symbol: str
@@ -60,6 +61,19 @@ async def fetch_stock_data(request: StockDataRequest):
             raise HTTPException(status_code=404, detail=f"No data found for symbol {request.symbol}")
         
         logger.info("Price data fetched successfully")
+        
+        # If a date is provided, filter to that date
+        if request.date:
+            try:
+                target_date = pd.to_datetime(request.date).date()
+                if target_date not in df["date"].values:
+                    raise HTTPException(status_code=404, detail=f"No data for {request.symbol} on {target_date}")
+                df = df[df["date"] == target_date].reset_index(drop=True)
+                if df.empty:
+                    raise HTTPException(status_code=404, detail=f"No data for {request.symbol} on {target_date}")
+            except Exception as e:
+                logger.error(f"Invalid date or no data for date: {request.date}")
+                raise HTTPException(status_code=400, detail=f"Invalid date or no data for date: {request.date}")
         
         # Calculate indicators and features
         try:
