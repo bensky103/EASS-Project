@@ -58,10 +58,11 @@ async def test_predict_mock_ollama(sample_stock_features):
         }"""
     }
     
-    async with AsyncClient(app=app, base_url="http://test") as ac:
-        with pytest.MonkeyPatch.context() as m:
-            # Mock the Ollama API call
-            m.setattr("llm_service.main.call_ollama", lambda x: mock_response)
+    async def mock_call_ollama(x):
+        return mock_response
+    with pytest.MonkeyPatch.context() as m:
+        m.setattr("llm_service.main.call_ollama", mock_call_ollama)
+        async with AsyncClient(app=app, base_url="http://test") as ac:
             response = await ac.post("/predict", json=sample_stock_features)
             
             assert response.status_code == 200
@@ -75,10 +76,10 @@ async def test_predict_mock_ollama(sample_stock_features):
 @pytest.mark.asyncio
 async def test_predict_ollama_unavailable(sample_stock_features):
     """Test prediction endpoint when Ollama is unavailable."""
-    async with AsyncClient(app=app, base_url="http://test") as ac:
-        with pytest.MonkeyPatch.context() as m:
-            # Mock the Ollama API call to simulate service unavailable
-            m.setattr("llm_service.main.call_ollama", 
-                     lambda x: pytest.raises(Exception("Connection refused")))
+    async def mock_call_ollama(x):
+        raise Exception("Connection refused")
+    with pytest.MonkeyPatch.context() as m:
+        m.setattr("llm_service.main.call_ollama", mock_call_ollama)
+        async with AsyncClient(app=app, base_url="http://test") as ac:
             response = await ac.post("/predict", json=sample_stock_features)
             assert response.status_code == 503 

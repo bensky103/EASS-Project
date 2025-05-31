@@ -16,7 +16,14 @@ def calculate_volume_features(df: pd.DataFrame) -> dict:
         "latest_volume": latest_volume,
         "volume_avg": avg_volume,
         "volume_spike": volume_spike,
-        "obv": obv
+        "obv": obv,
+        "volume_sma": float(avg_volume),
+        "volume_ratio": float(latest_volume) / avg_volume if avg_volume else 0.0,
+        "volume_trend": (
+            "increasing" if latest_volume > avg_volume * 1.05 else
+            "decreasing" if latest_volume < avg_volume * 0.95 else
+            "stable"
+        )
     }
     
     print("\n=== Volume Features ===")

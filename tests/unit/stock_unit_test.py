@@ -34,7 +34,7 @@ async def test_get_stock_success(monkeypatch, ok_payload):
         return DummyResp(ok_payload)
 
     # Mock both httpx client and yfinance Ticker
-    monkeypatch.setattr(stock_app.httpx.AsyncClient, "get", fake_get)
+    monkeypatch.setattr("httpx.AsyncClient.get", fake_get)
     
     # Mock yfinance Ticker
     class MockTicker:
@@ -56,7 +56,7 @@ async def test_get_stock_not_found(monkeypatch, bad_payload):
     async def fake_get(*_, **__):
         return DummyResp(bad_payload)
 
-    monkeypatch.setattr(stock_app.httpx.AsyncClient, "get", fake_get)
+    monkeypatch.setattr("httpx.AsyncClient.get", fake_get)
 
     # Mock yfinance Ticker to simulate not found error
     class MockTicker:
