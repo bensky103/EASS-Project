@@ -14,7 +14,6 @@ client = TestClient(app)
 @pytest.fixture
 def sample_price_data():
     """Create sample price data for testing using hard-coded trading days (business days)."""
-    # Use 20 consecutive business days in January 2024
     dates = [
         '2024-01-02', '2024-01-03', '2024-01-04', '2024-01-05', '2024-01-08',
         '2024-01-09', '2024-01-10', '2024-01-11', '2024-01-12', '2024-01-15',
@@ -23,9 +22,6 @@ def sample_price_data():
     ]
     data = {
         'date': pd.to_datetime(dates),
-        'open': [100 + i for i in range(20)],
-        'high': [105 + i for i in range(20)],
-        'low': [95 + i for i in range(20)],
         'close': [102 + i for i in range(20)],
         'volume': [1000000 + i * 10000 for i in range(20)]
     }
@@ -68,7 +64,12 @@ def test_fetch_stock_data_success(
     """Test successful stock data fetching."""
     # Mock the responses
     mock_fetch_price.return_value = sample_price_data
-    mock_add_indicators.return_value = sample_price_data.assign(
+    # Add extra columns for indicator calculation after initial DataFrame
+    df_with_extra = sample_price_data.copy()
+    df_with_extra['open'] = [100 + i for i in range(20)]
+    df_with_extra['high'] = [105 + i for i in range(20)]
+    df_with_extra['low'] = [95 + i for i in range(20)]
+    mock_add_indicators.return_value = df_with_extra.assign(
         sma_5=100,
         ema_5=101,
         macd=0.5,
