@@ -30,13 +30,12 @@ def wait_for_http_service(service: str, port: int, endpoint: str = "/health", ti
                 pytest.exit(f"Service {service} on port {port} never became ready")
             time.sleep(1)
 
-@pytest.fixture(scope="session", autouse=True)
+@pytest.fixture(scope="session")
 def _stack_up_and_wait():
     wait_for_http_service("auth", 8001)
-    wait_for_http_service("stock_data_fetching", 8000)  # Changed port to match service
-    wait_for_http_service("llm_service", 8003)  # Changed port to match service
+    wait_for_http_service("stock_data_fetching", 8000)
+    wait_for_http_service("llm_service", 8003)
     yield
-    
 
 # ── 2. sync client (simple tests) ───────────────────────────────────
 @pytest.fixture
