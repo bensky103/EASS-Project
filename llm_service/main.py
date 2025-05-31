@@ -188,6 +188,9 @@ async def predict_stock(request: PredictionRequest):
     except Exception as e:
         logger.error(f"Error generating prediction for {request.symbol}: {str(e)}")
         logger.exception("Full traceback:")
+        import httpx
+        if isinstance(e, httpx.ConnectError):
+            raise HTTPException(status_code=503, detail="Ollama service is not reachable. Please ensure it's running on localhost:11434")
         raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
