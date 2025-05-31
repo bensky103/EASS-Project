@@ -16,7 +16,7 @@ async def test_fetch_real_stock_data():
     async with AsyncClient(app=app, base_url="http://test") as ac:
         response = await ac.post(
             "/fetch",
-            json={"symbol": VALID_SYMBOL, "timeframe": TEST_TIMEFRAME}
+            json={"symbol": VALID_SYMBOL, "timeframe": TEST_TIMEFRAME, "date": "2025-05-30"}
         )
         
         assert response.status_code == 200
@@ -54,7 +54,7 @@ async def test_fetch_invalid_symbol():
     async with AsyncClient(app=app, base_url="http://test") as ac:
         response = await ac.post(
             "/fetch",
-            json={"symbol": INVALID_SYMBOL, "timeframe": TEST_TIMEFRAME}
+            json={"symbol": INVALID_SYMBOL, "timeframe": TEST_TIMEFRAME, "date": "2025-05-30"}
         )
         assert response.status_code == 404
 
@@ -64,7 +64,7 @@ async def test_fetch_with_invalid_timeframe():
     async with AsyncClient(app=app, base_url="http://test") as ac:
         response = await ac.post(
             "/fetch",
-            json={"symbol": VALID_SYMBOL, "timeframe": "invalid_timeframe"}
+            json={"symbol": VALID_SYMBOL, "timeframe": "invalid_timeframe", "date": "2025-05-30"}
         )
         assert response.status_code == 422  # Validation error
 
@@ -75,7 +75,7 @@ async def test_concurrent_requests():
         # Make multiple concurrent requests
         symbols = ["AAPL", "MSFT", "GOOGL"]
         responses = await asyncio.gather(*[
-            ac.post("/fetch", json={"symbol": symbol, "timeframe": TEST_TIMEFRAME})
+            ac.post("/fetch", json={"symbol": symbol, "timeframe": TEST_TIMEFRAME, "date": "2025-05-30"})
             for symbol in symbols
         ])
         
@@ -98,7 +98,7 @@ async def test_error_handling():
         async with AsyncClient(app=app, base_url="http://test") as ac:
             response = await ac.post(
                 "/fetch",
-                json={"symbol": VALID_SYMBOL, "timeframe": TEST_TIMEFRAME}
+                json={"symbol": VALID_SYMBOL, "timeframe": TEST_TIMEFRAME, "date": "2025-05-30"}
             )
             assert response.status_code == 500
             assert "error" in response.json()
@@ -115,7 +115,7 @@ async def test_rate_limiting():
         for _ in range(5):  # Make 5 requests
             response = await ac.post(
                 "/fetch",
-                json={"symbol": VALID_SYMBOL, "timeframe": TEST_TIMEFRAME}
+                json={"symbol": VALID_SYMBOL, "timeframe": TEST_TIMEFRAME, "date": "2025-05-30"}
             )
             responses.append(response)
         
