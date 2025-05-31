@@ -16,13 +16,14 @@ def sample_price_data():
     """Create sample price data for testing."""
     dates = pd.date_range(start='2024-01-01', periods=20, freq='D')
     data = {
+        'date': dates,
         'open': [100 + i for i in range(20)],
         'high': [105 + i for i in range(20)],
         'low': [95 + i for i in range(20)],
         'close': [102 + i for i in range(20)],
         'volume': [1000000 + i * 10000 for i in range(20)]
     }
-    return pd.DataFrame(data, index=dates)
+    return pd.DataFrame(data)
 
 @pytest.fixture
 def sample_fundamentals():
