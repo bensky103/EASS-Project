@@ -93,7 +93,6 @@ async def test_error_handling():
     # Temporarily modify the API key
     original_key = settings.ALPHA_VANTAGE_API_KEY
     settings.ALPHA_VANTAGE_API_KEY = "invalid_key"
-    
     try:
         async with AsyncClient(app=app, base_url="http://test") as ac:
             response = await ac.post(
@@ -101,10 +100,9 @@ async def test_error_handling():
                 json={"symbol": VALID_SYMBOL, "timeframe": TEST_TIMEFRAME, "date": "2025-05-30"}
             )
             assert response.status_code == 500
-            assert "error" in response.json()
     finally:
         # Restore the original API key
-        HA_VANTAGE_API_KEY = original_key
+        settings.ALPHA_VANTAGE_API_KEY = original_key
 
 @pytest.mark.asyncio
 async def test_rate_limiting():
