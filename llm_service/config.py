@@ -11,7 +11,8 @@ class Settings(BaseSettings):
     PORT: int = 8003
     
     # API Keys
-    ALPHA_VANTAGE_API_KEY: str = ""
+    ALPHA_VANTAGE_API_KEY: str = os.getenv("ALPHA_VANTAGE_API_KEY", "")
+    OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
     
     # Ollama settings
     OLLAMA_API_URL: str = "http://localhost:11434/api/generate"
