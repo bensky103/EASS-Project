@@ -11,7 +11,7 @@ import hashlib
 import json
 import re
 
-from stock_data_fetching.fetch_price_data import fetch_price_data
+from stock_data_fetching.fetch_price_data import fetch_price_data, fetch_rsi
 from stock_data_fetching.calculate_indicators import add_technical_indicators
 from stock_data_fetching.calculate_volume_features import calculate_volume_features
 from stock_data_fetching.fetch_fundamentals import fetch_fundamentals
@@ -33,117 +33,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# LLM prompt helper
-
-def format_llm_prompt(symbol: str, features: Dict[str, Any]) -> str:
-    open_price = features.get('open', 'N/A')
-    close_price = features.get('close', 'N/A')
-    high_price = features.get('high', 'N/A')
-    low_price = features.get('low', 'N/A')
-    volume = features.get('volume', 'N/A')
-    sma_10 = features.get('sma_10', 'N/A')
-    rsi = features.get('rsi', 'N/A')
-    macd = features.get('macd', 'N/A')
-
-    fiscal_date_ending = features.get('fiscalDateEnding', 'N/A')
-    reported_eps = features.get('reportedEPS', 'N/A')
-    estimated_eps = features.get('estimatedEPS', 'N/A')
-    surprise = features.get('surprise', 'N/A')
-    surprise_percentage = features.get('surprisePercentage', 'N/A')
-
-    prompt = f"""
-You are a professional financial analyst AI model.
-
-Your task is to evaluate a stock based on the following features, using technical analysis as the primary method and incorporating fundamental data as supporting context.
-
-Use recent price action, momentum indicators, and earnings performance to determine whether the stock should be bought, sold, or held.
-
-Stock Symbol: {symbol}
-
-Stock Data:
-[TECHNICAL INDICATORS]
-Open Price: {open_price}
-Close Price: {close_price}
-Daily High: {high_price}
-Daily Low: {low_price}
-Volume: {volume}
-10-Day Simple Moving Average (SMA): {sma_10}
-Relative Strength Index (RSI): {rsi}
-MACD Value: {macd}
-
-[FUNDAMENTALS]
-Fiscal Date Ending: {fiscal_date_ending}
-Reported EPS: {reported_eps}
-Estimated EPS: {estimated_eps}
-Earnings Surprise: {surprise}
-Surprise Percentage: {surprise_percentage}
-
-Instructions:
-Use technical indicators to analyze momentum, trend strength, overbought/oversold conditions, and trend reversal signals.
-Use fundamental data to confirm or challenge technical conclusions, especially focusing on earnings surprise and EPS performance.
-
-Take note of key relationships:
-If RSI > 70 and MACD is bearish, it may indicate overbought conditions.
-If Close crosses above SMA and MACD turns positive, this may indicate a bullish signal.
-Positive earnings surprise may reinforce a BUY recommendation.
-
-Question:
-Should I BUY, SELL, or HOLD this stock?
-
-Provide a clear and structured answer using this exact JSON format:
-
-{{
-    "recommendation": "BUY" | "SELL" | "HOLD",
-    "confidence": 0.00 to 1.00,
-    "reasoning": "Explain your technical analysis, and how (if at all) fundamentals support or contradict the technical signals."
-}}
-Respond with valid JSON only. Do not include any commentary outside of the JSON block.
-"""
-    return prompt
-
-# LLM call helper
-
-def call_ollama_llm(prompt: str) -> Dict[str, Any]:
-    url = settings.OLLAMA_API_URL
-    payload = {
-        "model": settings.OLLAMA_MODEL,
-        "prompt": prompt,
-        "stream": False
-    }
-    try:
-        logger.info(f"Sending prompt to Ollama model {settings.OLLAMA_MODEL} at {url}")
-        resp = requests.post(url, json=payload, timeout=60)
-        resp.raise_for_status()
-        api_response_data = resp.json()
-        logger.info(f"Raw Ollama response: {str(api_response_data)[:500]}")
-
-        if 'response' in api_response_data:
-            llm_output_str = api_response_data['response']
-            match = re.search(r'\\{\\s*.*\\s*\\}', llm_output_str, re.DOTALL)
-            if match:
-                json_str = match.group(0)
-                try:
-                    return json.loads(json_str)
-                except json.JSONDecodeError as e:
-                    logger.error(f"Failed to parse extracted JSON from LLM response: {e}. Extracted: {json_str}")
-                    raise HTTPException(status_code=500, detail=f"Failed to parse JSON from LLM response: {json_str}")
-            else:
-                try:
-                    return json.loads(llm_output_str)
-                except json.JSONDecodeError as e:
-                    logger.error(f"Failed to parse entire LLM response as JSON: {e}. Response: {llm_output_str}")
-                    raise HTTPException(status_code=500, detail=f"LLM response was not valid JSON: {llm_output_str}")
-        else:
-            logger.error(f"No 'response' field in Ollama API output. Full response: {api_response_data}")
-            raise HTTPException(status_code=500, detail="Invalid response structure from LLM: Missing 'response' field.")
-            
-    except requests.exceptions.Timeout:
-        logger.error(f"LLM call timed out to {url}")
-        raise HTTPException(status_code=504, detail="LLM call timed out")
-    except requests.exceptions.RequestException as e:
-        logger.error(f"LLM call failed: {e}")
-        raise HTTPException(status_code=503, detail=f"LLM call failed: {e}")
-
 class StockDataRequest(BaseModel):
     symbol: str
     timeframe: Optional[str] = settings.DEFAULT_TIMEFRAME
@@ -161,6 +50,7 @@ class StockDataResponse(BaseModel):
     technical_indicators: Dict[str, float]
     volume_features: Dict[str, Union[float, str]]
     fundamentals: Dict[str, Any]
+    news_sentiment: Dict[str, Any]
 
 class PredictRequest(BaseModel):
     symbol: str
@@ -180,7 +70,7 @@ async def health_check():
 @app.post("/fetch", response_model=StockDataResponse)
 async def fetch_stock_data(request: StockDataRequest):
     """
-    Fetch stock data including technical indicators, volume features, and fundamentals
+    Fetch stock data including technical indicators, volume features, fundamentals, and news sentiment
     """
     try:
         allowed = {"daily", "weekly", "monthly"}
@@ -249,6 +139,15 @@ async def fetch_stock_data(request: StockDataRequest):
         except Exception as e:
             logger.error(f"Error fetching fundamentals for {request.symbol}: {str(e)}", exc_info=True)
             raise HTTPException(status_code=500, detail=f"Error fetching fundamentals: {str(e)}")
+
+        # Fetch news sentiment
+        try:
+            from stock_data_fetching.fetch_fundamentals import fetch_news_sentiment
+            news_sentiment = fetch_news_sentiment(request.symbol, settings.ALPHA_VANTAGE_API_KEY)
+            logger.info(f"News sentiment fetched: {news_sentiment}")
+        except Exception as e:
+            logger.error(f"Error fetching news sentiment for {request.symbol}: {str(e)}", exc_info=True)
+            news_sentiment = {"error": str(e)}
         
         try:
             latest_indicators_row = final_row_data.iloc[-1]
@@ -267,6 +166,8 @@ async def fetch_stock_data(request: StockDataRequest):
                 "low": float(latest_indicators_row["low"]) if "low" in latest_indicators_row and pd.notna(latest_indicators_row["low"]) else latest_indicators_row.get("close"),
                 "volume": float(latest_indicators_row["volume"]) if "volume" in latest_indicators_row and pd.notna(latest_indicators_row["volume"]) else 0.0,
             }
+            # Fetch RSI from Alpha Vantage and add to technical_indicators
+            technical_indicators["rsi"] = fetch_rsi(request.symbol, settings.ALPHA_VANTAGE_API_KEY)
             logger.info(f"Technical indicators prepared for response: {technical_indicators}")
         except IndexError:
              logger.error(f"Cannot extract latest_indicators_row for {request.symbol}, final_row_data might be empty.", exc_info=True)
@@ -281,7 +182,8 @@ async def fetch_stock_data(request: StockDataRequest):
             symbol=request.symbol,
             technical_indicators=technical_indicators,
             volume_features=volume_features,
-            fundamentals=fundamentals
+            fundamentals=fundamentals,
+            news_sentiment=news_sentiment
         )
     except HTTPException as e:
         raise e

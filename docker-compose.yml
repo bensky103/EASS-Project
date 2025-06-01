@@ -146,6 +146,8 @@ services:
     restart: "no"
     env_file:
       - .env
+    volumes:
+      - .:/code
 
 volumes:
   mongo_data:

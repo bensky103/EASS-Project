@@ -11,7 +11,7 @@ RUN pip install -r requirements.txt
 COPY ../setup.py ./
 
 # Copy the entire project
-# COPY . /code/
+COPY . /code/
 
 # Install the package in development mode
 RUN pip install -e .

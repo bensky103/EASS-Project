@@ -1,7 +1,7 @@
 import httpx, pytest
 from unittest.mock import patch, MagicMock
 
-BASE = "http://localhost:8003"
+BASE = "http://eass_llm:8003"
 
 # @pytest.fixture(scope="module", autouse=True)
 # def wait_for_llm_service(_stack_up_and_wait):
@@ -33,7 +33,10 @@ def test_llm_predict():
         mock_response = MagicMock()
         mock_response.status_code = 200
         mock_response.json.return_value = {
-            "response": '{"recommendation": "BUY", "confidence": 0.85, "reasoning": "Strong upward momentum."}'
+            "symbol": "AAPL",
+            "recommendation": "BUY",
+            "confidence": 0.85,
+            "reasoning": "Strong upward momentum."
         }
         mock_httpx_post.return_value = mock_response
         r = httpx.post(f"{BASE}/predict", json=payload)

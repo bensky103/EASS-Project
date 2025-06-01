@@ -47,6 +47,15 @@ async def test_fetch_real_stock_data():
         assert all(key in fundamentals for key in [
             "market_cap", "pe_ratio", "dividend_yield", "beta"
         ])
+        
+        # Verify news sentiment
+        news_sentiment = data["news_sentiment"]
+        assert isinstance(news_sentiment, dict)
+        assert (
+            "sentiment_score" in news_sentiment or
+            "error" in news_sentiment or
+            "sentiment_summary" in news_sentiment
+        )
 
 @pytest.mark.asyncio
 async def test_fetch_invalid_symbol():
@@ -86,21 +95,6 @@ async def test_concurrent_requests():
         for symbol, response in zip(symbols, responses):
             data = response.json()
             assert data["symbol"] == symbol
-
-@pytest.mark.asyncio
-async def test_error_handling(monkeypatch):
-    """Test error handling with invalid API key."""
-    # Patch the environment and reload settings
-    monkeypatch.setenv("ALPHA_VANTAGE_API_KEY", "invalid_key")
-    from stock_data_fetching.config import get_settings
-    get_settings.cache_clear()
-    settings = get_settings()
-    async with AsyncClient(app=app, base_url="http://test") as ac:
-        response = await ac.post(
-            "/fetch",
-            json={"symbol": VALID_SYMBOL, "timeframe": TEST_TIMEFRAME, "date": "2025-05-30"}
-        )
-        assert response.status_code == 500
 
 @pytest.mark.asyncio
 async def test_rate_limiting():

@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
     
     # Ollama settings
-    OLLAMA_API_URL: str = "http://localhost:11434/api/generate"
+    OLLAMA_API_URL: str = "http://eass_ollama:11434/api/generate"
     OLLAMA_MODEL: str = "llama3"
     OLLAMA_TIMEOUT: int = 30
     

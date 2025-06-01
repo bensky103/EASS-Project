@@ -1,6 +1,6 @@
 import httpx, pytest, uuid
 
-BASE = "http://localhost:8001"
+BASE = "http://eass_auth:8001"
 
 def unique_email():
     return f"u{uuid.uuid4().hex[:8]}@test.local"

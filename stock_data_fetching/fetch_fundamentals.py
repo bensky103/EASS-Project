@@ -62,4 +62,47 @@ def fetch_fundamentals(symbol: str, api_key: str) -> dict:
         print(f"Surprise: {latest_report['surprise']}")
         print(f"Surprise Percentage: {latest_report['surprisePercentage']}%")
     
-    return fundamentals 
+    return fundamentals
+
+def fetch_news_sentiment(symbol: str, api_key: str) -> dict:
+    """Fetch news sentiment data from Alpha Vantage for the given symbol."""
+    url = f"https://www.alphavantage.co/query?function=NEWS_SENTIMENT&tickers={symbol}&apikey={api_key}"
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        data = response.json()
+        if "Error Message" in data:
+            return {"error": data["Error Message"]}
+        if "Information" in data:
+            return {"error": data["Information"]}
+        # Alpha Vantage returns a list of news items with sentiment scores
+        feed = data.get("feed", [])
+        if not feed:
+            return {"sentiment_summary": "No news data available."}
+        # Aggregate sentiment
+        sentiment_counts = {"positive": 0, "neutral": 0, "negative": 0}
+        headlines = []
+        for item in feed:
+            sentiment = item.get("overall_sentiment_label", "neutral").lower()
+            if sentiment in sentiment_counts:
+                sentiment_counts[sentiment] += 1
+            else:
+                sentiment_counts["neutral"] += 1
+            headlines.append({
+                "title": item.get("title", ""),
+                "summary": item.get("summary", ""),
+                "sentiment": sentiment,
+                "relevance_score": item.get("relevance_score", None)
+            })
+        total = sum(sentiment_counts.values())
+        sentiment_score = (
+            (sentiment_counts["positive"] - sentiment_counts["negative"]) / total
+            if total > 0 else 0.0
+        )
+        return {
+            "sentiment_score": sentiment_score,
+            "sentiment_counts": sentiment_counts,
+            "headlines": headlines[:5]  # Return up to 5 latest headlines
+        }
+    except Exception as e:
+        return {"error": str(e)} 

@@ -43,8 +43,8 @@ def fetch_price_data(symbol: str, api_key: str, days: int = 30, date: str = None
 
     ts = api_data.get("Time Series (Daily)", {})
     if not ts:
-        logger.warning(f"No 'Time Series (Daily)' data found for {symbol} from Alpha Vantage. API Response snippet: {str(api_data)[:200]}")
-        return pd.DataFrame()
+        logger.error(f"No 'Time Series (Daily)' data found for {symbol}. This might be due to an invalid API key or other API issue not explicitly reported by Alpha Vantage. API Response: {str(api_data)[:500]}")
+        raise HTTPException(status_code=500, detail=f"Failed to retrieve valid data for {symbol}. This could be due to an invalid API key or the symbol not existing with the provider.")
         
     df = pd.DataFrame([
         {"date": pd.to_datetime(d_str).date(), "close": float(d_val["4. close"]), "volume": int(d_val["5. volume"])}
@@ -74,3 +74,25 @@ def fetch_price_data(symbol: str, api_key: str, days: int = 30, date: str = None
         logger.info(f"Fetched 0 days of data for {symbol} after all processing in fetch_price_data.")
         
     return df 
+
+def fetch_rsi(symbol: str, api_key: str, interval: str = "daily", time_period: int = 14) -> float:
+    """Fetch the latest RSI value for a symbol from Alpha Vantage."""
+    url = f"https://www.alphavantage.co/query?function=RSI&symbol={symbol}&interval={interval}&time_period={time_period}&series_type=close&apikey={api_key}"
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        data = response.json()
+        if "Technical Analysis: RSI" in data:
+            rsi_data = data["Technical Analysis: RSI"]
+            if rsi_data:
+                # Get the latest RSI value
+                latest_date = sorted(rsi_data.keys())[-1]
+                return float(rsi_data[latest_date]["RSI"])
+        if "Error Message" in data:
+            raise HTTPException(status_code=500, detail=f"Alpha Vantage RSI error: {data['Error Message']}")
+        if "Information" in data:
+            raise HTTPException(status_code=429, detail=f"Alpha Vantage RSI info: {data['Information']}")
+        return 0.0
+    except Exception as e:
+        logger.error(f"Failed to fetch RSI for {symbol}: {e}")
+        return 0.0 
