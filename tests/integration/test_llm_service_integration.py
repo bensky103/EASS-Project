@@ -1,4 +1,5 @@
 import httpx, pytest
+from unittest.mock import patch
 
 BASE = "http://localhost:8003"
 
@@ -27,10 +28,16 @@ def test_llm_predict():
             "macd": 0.32
         }
     }
-    r = httpx.post(f"{BASE}/predict", json=payload)
-    assert r.status_code == 200
-    data = r.json()
-    assert data["symbol"] == "AAPL"
-    assert data["recommendation"] in ["BUY", "SELL", "HOLD"]
-    assert 0 <= data["confidence"] <= 1
-    assert isinstance(data["reasoning"], str) 
+    # Patch requests.post to mock LLM response
+    with patch("requests.post") as mock_post:
+        mock_post.return_value.status_code = 200
+        mock_post.return_value.json.return_value = {
+            "response": '{"recommendation": "BUY", "confidence": 0.85, "reasoning": "Strong upward momentum."}'
+        }
+        r = httpx.post(f"{BASE}/predict", json=payload)
+        assert r.status_code == 200
+        data = r.json()
+        assert data["symbol"] == "AAPL"
+        assert data["recommendation"] in ["BUY", "SELL", "HOLD"]
+        assert 0 <= data["confidence"] <= 1
+        assert isinstance(data["reasoning"], str) 
