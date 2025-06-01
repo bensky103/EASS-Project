@@ -22,8 +22,7 @@ RUN pip install -e .
 
 # Copy the rest of the application
 COPY llm_service /app/llm_service
-
-# Make the entrypoint script executable
+COPY llm_service/entrypoint.sh .
 RUN chmod +x entrypoint.sh
 
 # Expose the port the app runs on

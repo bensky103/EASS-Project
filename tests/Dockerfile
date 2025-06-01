@@ -7,6 +7,9 @@ WORKDIR /code
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
+# Copy setup.py from project root to /code
+COPY ../setup.py ./
+
 # Copy the entire project
 # COPY . /code/
 

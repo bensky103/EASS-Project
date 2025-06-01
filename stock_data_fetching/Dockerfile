@@ -13,6 +13,9 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
+# Copy setup.py from project root to /app
+COPY ../setup.py ./
+
 # Install the package in development mode
 RUN pip install -e .
 
