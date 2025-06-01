@@ -324,6 +324,12 @@ async def predict(request: PredictRequest):
         logger.error(f"Error during prediction for {request.symbol}: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"Error during prediction process: {str(e)}")
 
+@app.post("/clear-cache")
+def clear_cache():
+    alpha_cache.clear()
+    logger.info("Alpha Vantage cache cleared via /clear-cache endpoint.")
+    return {"status": "cache cleared"}
+
 if __name__ == "__main__":
     uvicorn.run(
         "main:app",
