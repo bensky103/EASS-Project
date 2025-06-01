@@ -30,6 +30,8 @@ def fetch_price_data(symbol: str, api_key: str, days: int = 30, date: str = None
     if "Error Message" in api_data:
         error_msg = api_data['Error Message']
         logger.error(f"Alpha Vantage API Error for {symbol}: {error_msg}")
+        if "Invalid API call" in error_msg:
+            raise HTTPException(status_code=404, detail=f"Symbol not found: {symbol}")
         raise HTTPException(status_code=500, detail=f"External API Error for {symbol}: {error_msg}")
     
     if "Information" in api_data:
