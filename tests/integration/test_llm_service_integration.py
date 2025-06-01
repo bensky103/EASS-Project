@@ -1,5 +1,5 @@
 import httpx, pytest
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 
 BASE = "http://localhost:8003"
 
@@ -28,12 +28,14 @@ def test_llm_predict():
             "macd": 0.32
         }
     }
-    # Patch requests.post to mock LLM response
-    with patch("requests.post") as mock_post:
-        mock_post.return_value.status_code = 200
-        mock_post.return_value.json.return_value = {
+    # Patch httpx.post to mock LLM response
+    with patch("httpx.post") as mock_httpx_post:
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {
             "response": '{"recommendation": "BUY", "confidence": 0.85, "reasoning": "Strong upward momentum."}'
         }
+        mock_httpx_post.return_value = mock_response
         r = httpx.post(f"{BASE}/predict", json=payload)
         assert r.status_code == 200
         data = r.json()

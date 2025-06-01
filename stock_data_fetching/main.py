@@ -2,7 +2,7 @@
 
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 from typing import Dict, Any, Optional, Union
 import uvicorn
 import pandas as pd
@@ -166,6 +166,13 @@ class StockDataRequest(BaseModel):
     timeframe: Optional[str] = settings.DEFAULT_TIMEFRAME
     date: Optional[str] = None
 
+    @validator("timeframe")
+    def validate_timeframe(cls, v):
+        allowed = {"daily", "weekly", "monthly"}
+        if v is not None and v not in allowed:
+            raise ValueError(f"Invalid timeframe: {v}. Must be one of {allowed}")
+        return v
+
 class StockDataResponse(BaseModel):
     symbol: str
     technical_indicators: Dict[str, float]
@@ -193,6 +200,10 @@ async def fetch_stock_data(request: StockDataRequest):
     Fetch stock data including technical indicators, volume features, and fundamentals
     """
     try:
+        # Validate timeframe again for extra safety (in case of direct dict usage)
+        allowed = {"daily", "weekly", "monthly"}
+        if request.timeframe not in allowed:
+            raise HTTPException(status_code=422, detail=f"Invalid timeframe: {request.timeframe}. Must be one of {allowed}")
         logger.info(f"Starting data fetch for symbol: {request.symbol}, date: {request.date}")
         
         # Use cached_fetch_price_data
