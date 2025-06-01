@@ -11,6 +11,5 @@ setup(
         "passlib[bcrypt]",
         "python-multipart",
         "motor",
-        "redis",
     ],
 ) 

@@ -33,23 +33,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Simple in-memory cache for Alpha Vantage responses
-alpha_cache = {}
-
-# Helper to cache fetch_price_data
-
-def cached_fetch_price_data(symbol: str, api_key: str, days: int = 30, date: Optional[str] = None) -> pd.DataFrame:
-    cache_key_str = f"{symbol}:{days}:{date}"
-    if cache_key_str in alpha_cache:
-        logger.info(f"Cache hit for price data: {cache_key_str}")
-        return alpha_cache[cache_key_str].copy()
-    
-    logger.info(f"Cache miss for price data: {cache_key_str}. Fetching from API.")
-    df = fetch_price_data(symbol, api_key, days, date)
-    if not df.empty:
-        alpha_cache[cache_key_str] = df.copy()
-    return df
-
 # LLM prompt helper
 
 def format_llm_prompt(symbol: str, features: Dict[str, Any]) -> str:
@@ -200,17 +183,14 @@ async def fetch_stock_data(request: StockDataRequest):
     Fetch stock data including technical indicators, volume features, and fundamentals
     """
     try:
-        # Validate timeframe again for extra safety (in case of direct dict usage)
         allowed = {"daily", "weekly", "monthly"}
         if request.timeframe not in allowed:
             raise HTTPException(status_code=422, detail=f"Invalid timeframe: {request.timeframe}. Must be one of {allowed}")
         logger.info(f"Starting data fetch for symbol: {request.symbol}, date: {request.date}")
-        
-        # Use cached_fetch_price_data
-        df = cached_fetch_price_data(request.symbol, settings.ALPHA_VANTAGE_API_KEY, date=request.date)
-        
+        # Use fetch_price_data directly
+        df = fetch_price_data(request.symbol, settings.ALPHA_VANTAGE_API_KEY, date=request.date)
         if df.empty:
-            logger.warning(f"No data returned from cached_fetch_price_data for symbol {request.symbol} and date {request.date}")
+            logger.warning(f"No data returned from fetch_price_data for symbol {request.symbol} and date {request.date}")
             raise HTTPException(status_code=404, detail=f"No data found for symbol {request.symbol} on the specified date or in recent history.")
         
         logger.info(f"Price data obtained for {request.symbol}. Shape: {df.shape}")
@@ -334,12 +314,6 @@ async def predict(request: PredictRequest):
     except Exception as e:
         logger.error(f"Error during prediction for {request.symbol}: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"Error during prediction process: {str(e)}")
-
-@app.post("/clear-cache")
-def clear_cache():
-    alpha_cache.clear()
-    logger.info("Alpha Vantage cache cleared via /clear-cache endpoint.")
-    return {"status": "cache cleared"}
 
 if __name__ == "__main__":
     uvicorn.run(
