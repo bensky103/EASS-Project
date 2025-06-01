@@ -189,6 +189,10 @@ async def fetch_stock_data(request: StockDataRequest):
         logger.info(f"Starting data fetch for symbol: {request.symbol}, date: {request.date}")
         # Use fetch_price_data directly
         df = fetch_price_data(request.symbol, settings.ALPHA_VANTAGE_API_KEY, date=request.date)
+        # Check for invalid API key or error message in response
+        if hasattr(df, 'error') or (isinstance(df, dict) and 'Error Message' in df):
+            logger.error(f"Alpha Vantage API key invalid or error: {getattr(df, 'error', df.get('Error Message', 'Unknown error'))}")
+            raise HTTPException(status_code=500, detail="Alpha Vantage API key is invalid or request failed.")
         if df.empty:
             logger.warning(f"No data returned from fetch_price_data for symbol {request.symbol} and date {request.date}")
             raise HTTPException(status_code=404, detail=f"No data found for symbol {request.symbol} on the specified date or in recent history.")
