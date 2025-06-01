@@ -1,11 +1,11 @@
+from dotenv import load_dotenv
+load_dotenv()
 from pydantic_settings import BaseSettings
 from functools import lru_cache
 from typing import Optional
 import os
-from dotenv import load_dotenv
 
 # Load environment variables from .env file
-load_dotenv()
 
 class Settings(BaseSettings):
     # API Keys
