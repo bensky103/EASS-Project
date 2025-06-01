@@ -104,7 +104,7 @@ async def test_error_handling():
             assert "error" in response.json()
     finally:
         # Restore the original API key
-        settings.ALPHA_VANTAGE_API_KEY = original_key
+        HA_VANTAGE_API_KEY = original_key
 
 @pytest.mark.asyncio
 async def test_rate_limiting():

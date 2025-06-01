@@ -10,7 +10,6 @@ load_dotenv()
 class Settings(BaseSettings):
     # API Keys
     ALPHA_VANTAGE_API_KEY: str = os.getenv("ALPHA_VANTAGE_API_KEY", "")
-    OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
     
     # Service Configuration
     SERVICE_NAME: str = "stock_data_fetching"
@@ -20,7 +19,6 @@ class Settings(BaseSettings):
     
     # API Configuration
     ALPHA_VANTAGE_BASE_URL: str = "https://www.alphavantage.co/query"
-    OPENAI_MODEL: str = "gpt-3.5-turbo"
     OLLAMA_API_URL: str = os.getenv("OLLAMA_API_URL", "http://localhost:11434/api/generate")
     OLLAMA_MODEL: str = os.getenv("OLLAMA_MODEL", "llama2")
     

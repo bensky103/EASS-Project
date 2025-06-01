@@ -13,9 +13,6 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
-# Copy the entire project
-- COPY . /app/
-
 # Install the package in development mode
 RUN pip install -e .
 

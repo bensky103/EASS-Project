@@ -14,14 +14,14 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
-# Copy the entire project
-# COPY . /app/
+# Copy setup.py from project root to /app
+COPY ../setup.py ./
 
 # Install the package in development mode
 RUN pip install -e .
 
 # Copy the rest of the application
-COPY llm_service /app
+COPY llm_service /app/llm_service
 
 # Make the entrypoint script executable
 RUN chmod +x entrypoint.sh
