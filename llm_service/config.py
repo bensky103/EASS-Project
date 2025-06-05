@@ -17,7 +17,7 @@ class Settings(BaseSettings):
     # Ollama settings
     OLLAMA_API_URL: str = "http://eass_ollama:11434/api/generate"
     OLLAMA_MODEL: str = "llama3"
-    OLLAMA_TIMEOUT: int = 30
+    OLLAMA_TIMEOUT: int | None = 6000
     
     # Auth/JWT settings (added to match .env)
     JWT_SECRET: str = os.getenv("JWT_SECRET", "")

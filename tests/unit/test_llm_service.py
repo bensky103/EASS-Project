@@ -12,14 +12,30 @@ def sample_stock_features():
     return {
         "symbol": "AAPL",
         "features": {
+            "latest_close": 190.12,
+            "sma_5": 188.23,
+            "ema_5": 189.0,
+            "macd": 0.32,
+            "macd_signal": 0.3,
+            "macd_hist": 0.02,
+            "bb_upper": 195.0,
+            "bb_middle": 190.0,
+            "bb_lower": 185.0,
             "open": 186.32,
-            "close": 190.12,
             "high": 192.01,
             "low": 185.21,
             "volume": 32500000,
-            "sma_10": 188.23,
-            "rsi": 62.4,
-            "macd": 0.32
+            "latest_volume": 32500000,
+            "volume_avg": 30000000.0,
+            "volume_spike": 0,
+            "obv": 100000000,
+            "volume_sma": 30000000.0,
+            "volume_ratio": 1.1,
+            "volume_trend": "increasing",
+            "market_cap": 2000000000000,
+            "pe_ratio": 30.0,
+            "dividend_yield": 0.005,
+            "beta": 1.2
         }
     }
 

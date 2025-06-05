@@ -93,7 +93,7 @@ async def call_ollama(prompt: str) -> Dict[str, Any]:
     async with httpx.AsyncClient(timeout=30.0) as client:
         try:
             response = await client.post(
-                "http://localhost:11434/api/generate",
+                "http://eass_ollama:11434/api/generate",
                 json={
                     "model": "llama3",
                     "prompt": prompt
@@ -104,7 +104,7 @@ async def call_ollama(prompt: str) -> Dict[str, Any]:
         except httpx.ConnectError:
             raise HTTPException(
                 status_code=503,
-                detail="Ollama service is not reachable. Please ensure it's running on localhost:11434"
+                detail="Ollama service is not reachable. Please ensure it's running on eass_ollama:11434"
             )
         except httpx.HTTPError as e:
             raise HTTPException(
