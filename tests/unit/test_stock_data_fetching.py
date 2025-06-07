@@ -55,7 +55,29 @@ def test_fetch_stock_data_invalid_symbol():
 @patch('stock_data_fetching.calculate_indicators.add_technical_indicators')
 @patch('stock_data_fetching.calculate_volume_features.calculate_volume_features')
 @patch('stock_data_fetching.main.fetch_fundamentals')
+@patch('stock_data_fetching.main.fetch_news_sentiment')
+@patch('stock_data_fetching.main.fetch_advanced_news_sentiment')
+@patch('stock_data_fetching.main.fetch_extended_fundamentals', return_value={})
+@patch('stock_data_fetching.main.fetch_aroon', return_value={})
+@patch('stock_data_fetching.main.fetch_adx', return_value={})
+@patch('stock_data_fetching.main.fetch_stoch', return_value={})
+@patch('stock_data_fetching.main.fetch_cci', return_value={})
+@patch('stock_data_fetching.main.fetch_psar', return_value={})
+@patch('stock_data_fetching.main.fetch_chaikin_money_flow', return_value={})
+@patch('stock_data_fetching.main.fetch_adl', return_value={})
+@patch('stock_data_fetching.main.fetch_rsi', return_value=50.0)
 def test_fetch_stock_data_success(
+    mock_fetch_rsi,
+    mock_fetch_adl,
+    mock_fetch_cmf,
+    mock_fetch_psar,
+    mock_fetch_cci,
+    mock_fetch_stoch,
+    mock_fetch_adx,
+    mock_fetch_aroon,
+    mock_fetch_ext_fundamentals,
+    mock_fetch_advanced_news,
+    mock_fetch_news,
     mock_fetch_fundamentals,
     mock_calculate_volume,
     mock_add_indicators,
@@ -87,6 +109,8 @@ def test_fetch_stock_data_success(
         "volume_trend": "increasing"
     }
     mock_fetch_fundamentals.return_value = sample_fundamentals
+    mock_fetch_news.return_value = {"sentiment_score": 0.5}
+    mock_fetch_advanced_news.return_value = {"sentiment_score": 0.75}
 
     print("SAMPLE PRICE DATA:")
     print(sample_price_data)
