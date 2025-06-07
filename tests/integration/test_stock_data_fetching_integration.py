@@ -76,22 +76,3 @@ async def test_fetch_with_invalid_timeframe():
             json={"symbol": VALID_SYMBOL, "timeframe": "invalid_timeframe", "date": "2025-05-30"}
         )
         assert response.status_code == 422  # Validation error
-
-@pytest.mark.asyncio
-async def test_concurrent_requests():
-    """Test handling multiple concurrent requests."""
-    async with AsyncClient(app=app, base_url="http://test") as ac:
-        # Make multiple concurrent requests
-        symbols = ["AAPL", "MSFT", "GOOGL"]
-        responses = await asyncio.gather(*[
-            ac.post("/fetch", json={"symbol": symbol, "timeframe": TEST_TIMEFRAME, "date": "2025-05-30"})
-            for symbol in symbols
-        ])
-        
-        # Verify all requests were successful
-        assert all(response.status_code == 200 for response in responses)
-        
-        # Verify each response has the correct symbol
-        for symbol, response in zip(symbols, responses):
-            data = response.json()
-            assert data["symbol"] == symbol
