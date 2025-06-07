@@ -32,7 +32,7 @@ def fetch_price_data(symbol: str, api_key: str, days: int = 30, date: str = None
         error_msg = api_data['Error Message']
         logger.error(f"Alpha Vantage API Error for {symbol}: {error_msg}")
         if "Invalid API call" in error_msg:
-            raise HTTPException(status_code=404, detail=f"Symbol not found: {symbol}")
+            return pd.DataFrame()  # Symbol not found
         if "Invalid API key" in error_msg or "API key" in error_msg:
             raise HTTPException(status_code=500, detail="Invalid or missing Alpha Vantage API key.")
         raise HTTPException(status_code=500, detail=f"External API Error for {symbol}: {error_msg}")
@@ -40,12 +40,14 @@ def fetch_price_data(symbol: str, api_key: str, days: int = 30, date: str = None
     if "Information" in api_data:
         info_msg = api_data['Information']
         logger.warning(f"Alpha Vantage API Info for {symbol}: {info_msg}")
-        raise HTTPException(status_code=429, detail=f"API usage issue or rate limit exceeded for {symbol}: {info_msg}")
+        # This could be a rate limit or a premium endpoint message. For this service's purpose,
+        # it means no data is available. Return an empty DataFrame, let the caller handle it.
+        return pd.DataFrame()
 
     ts_key = "Time Series (Daily)"
     if ts_key not in api_data:
         logger.error(f"No '{ts_key}' data found for {symbol}. API Response: {str(api_data)[:500]}")
-        raise HTTPException(status_code=500, detail=f"Failed to retrieve valid time series data for {symbol}.")
+        return pd.DataFrame()
         
     ts = api_data[ts_key]
     df = pd.DataFrame([

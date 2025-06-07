@@ -338,6 +338,7 @@ async def predict_stock(request: PredictionRequest):
     try:
         logger.info(f"Generating prediction for {request.symbol}")
         features = request.features
+        data = {}  # Initialize data to an empty dict
         news_sentiment = None
         if features is None:
             # Fetch features from stock data service
