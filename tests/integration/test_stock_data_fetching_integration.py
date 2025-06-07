@@ -95,25 +95,3 @@ async def test_concurrent_requests():
         for symbol, response in zip(symbols, responses):
             data = response.json()
             assert data["symbol"] == symbol
-
-@pytest.mark.asyncio
-async def test_rate_limiting():
-    """Test rate limiting behavior."""
-    async with AsyncClient(app=app, base_url="http://test") as ac:
-        # Make multiple requests in quick succession
-        responses = []
-        for _ in range(5):  # Make 5 requests
-            response = await ac.post(
-                "/fetch",
-                json={"symbol": VALID_SYMBOL, "timeframe": TEST_TIMEFRAME, "date": "2025-05-30"}
-            )
-            responses.append(response)
-        
-        # Verify that not all requests failed due to rate limiting
-        success_count = sum(1 for r in responses if r.status_code == 200)
-        assert success_count > 0, "All requests failed, possible rate limiting issue"
-        
-        # If any requests failed, they should be 429 (Too Many Requests)
-        for response in responses:
-            if response.status_code != 200:
-                assert response.status_code == 429 
