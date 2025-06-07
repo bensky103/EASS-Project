@@ -67,11 +67,16 @@ def test_predict_invalid_features():
 async def test_predict_mock_ollama(sample_stock_features):
     """Test prediction endpoint with mocked Ollama response."""
     mock_response = {
-        "response": """{
-            "recommendation": "BUY",
-            "confidence": 0.82,
-            "reasoning": "The RSI is moderate, MACD is positive, and volume supports momentum."
-        }"""
+        "response": """
+RECOMMENDATION: BUY
+CONFIDENCE: 0.82
+TIME_FRAME: Next 5 trading days
+PRICE_PREDICTIONS:
+Day 1: 200.50
+Day 2: 205.00
+Day 3: 203.75
+REASONING: The RSI is moderate, MACD is positive, and volume supports momentum.
+"""
     }
     
     async def mock_call_ollama(x):
@@ -84,10 +89,12 @@ async def test_predict_mock_ollama(sample_stock_features):
             assert response.status_code == 200
             data = response.json()
             assert data["symbol"] == "AAPL"
-            assert data["recommendation"] in ["BUY", "SELL", "HOLD"]
-            assert 0 <= data["confidence"] <= 1
-            assert isinstance(data["reasoning"], str)
+            assert data["recommendation"] == "BUY"
+            assert data["confidence"] == 0.82
+            assert data["reasoning"] == "The RSI is moderate, MACD is positive, and volume supports momentum."
             assert "timestamp" in data
+            assert data["time_frame"] == "Next 5 trading days"
+            assert data["price_predictions"] == {"Day 1": 200.50, "Day 2": 205.00, "Day 3": 203.75}
 
 @pytest.mark.asyncio
 async def test_predict_ollama_unavailable(sample_stock_features):
