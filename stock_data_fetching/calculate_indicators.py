@@ -1,6 +1,80 @@
 import pandas_ta as ta
 import pandas as pd
 import numpy as np
+import requests
+
+def fetch_technical_indicator(symbol: str, api_key: str, function: str, interval: str = "daily", time_period: int = None, **kwargs) -> dict:
+    """Helper function to fetch a single technical indicator from Alpha Vantage."""
+    base_url = f"https://www.alphavantage.co/query?function={function}&symbol={symbol}&interval={interval}&series_type=close&apikey={api_key}"
+    if time_period:
+        base_url += f"&time_period={time_period}"
+    
+    # Add any other optional parameters
+    for key, value in kwargs.items():
+        base_url += f"&{key}={value}"
+        
+    try:
+        response = requests.get(base_url)
+        response.raise_for_status()
+        data = response.json()
+        indicator_key = f"Technical Analysis: {function}"
+        if indicator_key not in data:
+            # Handle cases where the key might be different, e.g., for STOCH
+            if "Technical Analysis: STOCH" in data:
+                indicator_key = "Technical Analysis: STOCH"
+            else:
+                print(f"Warning: Could not find '{indicator_key}' in response for {function}.")
+                if "Error Message" in data:
+                    print(f"API Error: {data['Error Message']}")
+                return {}
+        
+        latest_date = sorted(data[indicator_key].keys(), reverse=True)[0]
+        latest_values = data[indicator_key][latest_date]
+        
+        # Lowercase keys and remove function name prefix for cleaner output
+        return {k.lower().replace(f'{function.lower()}_', ''): float(v) for k, v in latest_values.items()}
+    except Exception as e:
+        print(f"Error fetching {function} for {symbol}: {e}")
+        return {}
+
+def fetch_aroon(symbol: str, api_key: str, time_period: int = 14) -> dict:
+    """Fetches AROON Up and AROON Down values."""
+    return fetch_technical_indicator(symbol, api_key, "AROON", time_period=time_period)
+
+def fetch_adx(symbol: str, api_key: str, time_period: int = 14) -> dict:
+    """Fetches ADX (Average Directional Index) value."""
+    return fetch_technical_indicator(symbol, api_key, "ADX", time_period=time_period)
+
+def fetch_stoch(symbol: str, api_key: str) -> dict:
+    """Fetches Slow STOCH (%K and %D) values."""
+    return fetch_technical_indicator(symbol, api_key, "STOCH")
+
+def fetch_cci(symbol: str, api_key: str, time_period: int = 20) -> dict:
+    """Fetches CCI (Commodity Channel Index) value."""
+    return fetch_technical_indicator(symbol, api_key, "CCI", time_period=time_period)
+
+def fetch_psar(symbol: str, api_key: str, acceleration=0.02, maximum=0.2) -> dict:
+    """Fetches PSAR (Parabolic SAR) value."""
+    # This function requires specific parameter names for the API call
+    url = f"https://www.alphavantage.co/query?function=PSAR&symbol={symbol}&interval=daily&acceleration={acceleration}&maximum={maximum}&apikey={api_key}"
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        data = response.json()
+        indicator_key = "Technical Analysis: PSAR"
+        if indicator_key not in data:
+            print(f"Warning: Could not find '{indicator_key}' in response for PSAR.")
+            if "Error Message" in data:
+                print(f"API Error: {data['Error Message']}")
+            return {}
+        
+        latest_date = sorted(data[indicator_key].keys(), reverse=True)[0]
+        latest_value = data[indicator_key][latest_date]
+        
+        return {'psar': float(latest_value['PSAR'])}
+    except Exception as e:
+        print(f"Error fetching PSAR for {symbol}: {e}")
+        return {}
 
 def calculate_macd(close_prices: pd.Series, fast=12, slow=26, signal=9) -> pd.DataFrame:
     """Calculate MACD manually to avoid pandas_ta issues"""
@@ -70,4 +144,4 @@ def add_technical_indicators(df: pd.DataFrame) -> pd.DataFrame:
     print(f"MACD Histogram: {latest['macd_hist']:.2f}")
     print(f"Bollinger Bands - Upper: {latest['bb_upper']:.2f}, Middle: {latest['bb_middle']:.2f}, Lower: {latest['bb_lower']:.2f}")
     
-    return df 
+    return df

@@ -1,12 +1,13 @@
 import requests
 import pandas as pd
+import pandas_ta as ta
 from datetime import datetime
 from fastapi import HTTPException
 from .logger import logger
 
 def fetch_price_data(symbol: str, api_key: str, days: int = 30, date: str = None) -> pd.DataFrame:
     outputsize = "full" if date else "compact"
-    url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={symbol}&outputsize={outputsize}&apikey={api_key}"
+    url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol={symbol}&outputsize={outputsize}&apikey={api_key}"
     
     api_data = {}
     try:
@@ -41,13 +42,22 @@ def fetch_price_data(symbol: str, api_key: str, days: int = 30, date: str = None
         logger.warning(f"Alpha Vantage API Info for {symbol}: {info_msg}")
         raise HTTPException(status_code=429, detail=f"API usage issue or rate limit exceeded for {symbol}: {info_msg}")
 
-    ts = api_data.get("Time Series (Daily)", {})
-    if not ts:
-        logger.error(f"No 'Time Series (Daily)' data found for {symbol}. This might be due to an invalid API key or other API issue not explicitly reported by Alpha Vantage. API Response: {str(api_data)[:500]}")
-        raise HTTPException(status_code=500, detail=f"Failed to retrieve valid data for {symbol}. This could be due to an invalid API key or the symbol not existing with the provider.")
+    ts_key = "Time Series (Daily)"
+    if ts_key not in api_data:
+        logger.error(f"No '{ts_key}' data found for {symbol}. API Response: {str(api_data)[:500]}")
+        raise HTTPException(status_code=500, detail=f"Failed to retrieve valid time series data for {symbol}.")
         
+    ts = api_data[ts_key]
     df = pd.DataFrame([
-        {"date": pd.to_datetime(d_str).date(), "close": float(d_val["4. close"]), "volume": int(d_val["5. volume"])}
+        {
+            "date": pd.to_datetime(d_str).date(),
+            "open": float(d_val["1. open"]),
+            "high": float(d_val["2. high"]),
+            "low": float(d_val["3. low"]),
+            "close": float(d_val["4. close"]),
+            "adjusted_close": float(d_val["5. adjusted close"]),
+            "volume": int(d_val["6. volume"])
+        }
         for d_str, d_val in ts.items()
     ])
 
@@ -74,6 +84,50 @@ def fetch_price_data(symbol: str, api_key: str, days: int = 30, date: str = None
         logger.info(f"Fetched 0 days of data for {symbol} after all processing in fetch_price_data.")
         
     return df 
+
+def calculate_price_volatility_features(df: pd.DataFrame) -> dict:
+    """
+    Calculates daily return, intraday volatility, and Bollinger Band %B from price data.
+    """
+    if df.empty or len(df) < 2:
+        return {
+            "daily_return": 0.0,
+            "intraday_volatility": 0.0,
+            "bollinger_percent_b": 0.0
+        }
+
+    latest = df.iloc[-1]
+    previous = df.iloc[-2]
+
+    # Daily Return
+    daily_return = (latest['close'] - previous['close']) / previous['close']
+
+    # Intraday Volatility
+    intraday_volatility = (latest['high'] - latest['low']) / latest['close'] if latest['close'] > 0 else 0
+
+    # Bollinger Band %B
+    try:
+        bbands = ta.bbands(df['close'], length=20, std=2)
+        if bbands is not None and not bbands.empty:
+            latest_bb = bbands.iloc[-1]
+            upper_band = latest_bb['BBU_20_2.0']
+            lower_band = latest_bb['BBL_20_2.0']
+            
+            if (upper_band - lower_band) > 0:
+                bollinger_percent_b = (latest['close'] - lower_band) / (upper_band - lower_band)
+            else:
+                bollinger_percent_b = 0.0 # Avoid division by zero
+        else:
+            bollinger_percent_b = 0.0
+    except Exception as e:
+        print(f"Could not calculate Bollinger Bands: {e}")
+        bollinger_percent_b = 0.0
+
+    return {
+        "daily_return": daily_return,
+        "intraday_volatility": intraday_volatility,
+        "bollinger_percent_b": bollinger_percent_b
+    }
 
 def fetch_rsi(symbol: str, api_key: str, interval: str = "daily", time_period: int = 14) -> float:
     """Fetch the latest RSI value for a symbol from Alpha Vantage."""

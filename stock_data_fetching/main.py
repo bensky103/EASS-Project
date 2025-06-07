@@ -12,9 +12,10 @@ import json
 import re
 
 from stock_data_fetching.fetch_price_data import fetch_price_data, fetch_rsi
-from stock_data_fetching.calculate_indicators import add_technical_indicators
-from stock_data_fetching.calculate_volume_features import calculate_volume_features
-from stock_data_fetching.fetch_fundamentals import fetch_fundamentals
+from stock_data_fetching.calculate_indicators import add_technical_indicators, fetch_aroon, fetch_adx, fetch_stoch, fetch_cci, fetch_psar
+from stock_data_fetching.calculate_volume_features import calculate_volume_features, fetch_chaikin_money_flow, fetch_adl
+from stock_data_fetching.fetch_fundamentals import fetch_fundamentals, fetch_extended_fundamentals
+from stock_data_fetching.news_features import fetch_news_sentiment, fetch_advanced_news_sentiment
 from stock_data_fetching.config import settings
 from stock_data_fetching.logger import logger
 
@@ -51,6 +52,10 @@ class StockDataResponse(BaseModel):
     volume_features: Dict[str, Union[float, str]]
     fundamentals: Dict[str, Any]
     news_sentiment: Dict[str, Any]
+    advanced_news_sentiment: Optional[Dict[str, Any]] = None
+    extended_fundamentals: Optional[Dict[str, Any]] = None
+    technical_indicators_ext: Optional[Dict[str, Any]] = None
+    volume_features_ext: Optional[Dict[str, Any]] = None
 
 class PredictRequest(BaseModel):
     symbol: str
@@ -142,12 +147,33 @@ async def fetch_stock_data(request: StockDataRequest):
 
         # Fetch news sentiment
         try:
-            from stock_data_fetching.fetch_fundamentals import fetch_news_sentiment
             news_sentiment = fetch_news_sentiment(request.symbol, settings.ALPHA_VANTAGE_API_KEY)
+            advanced_news_sentiment = fetch_advanced_news_sentiment(request.symbol, settings.ALPHA_VANTAGE_API_KEY)
             logger.info(f"News sentiment fetched: {news_sentiment}")
         except Exception as e:
             logger.error(f"Error fetching news sentiment for {request.symbol}: {str(e)}", exc_info=True)
             news_sentiment = {"error": str(e)}
+            advanced_news_sentiment = {"error": str(e)}
+
+        try:
+            extended_fundamentals = fetch_extended_fundamentals(request.symbol, settings.ALPHA_VANTAGE_API_KEY)
+            technical_indicators_ext = {
+                "aroon": fetch_aroon(request.symbol, settings.ALPHA_VANTAGE_API_KEY),
+                "adx": fetch_adx(request.symbol, settings.ALPHA_VANTAGE_API_KEY),
+                "stoch": fetch_stoch(request.symbol, settings.ALPHA_VANTAGE_API_KEY),
+                "cci": fetch_cci(request.symbol, settings.ALPHA_VANTAGE_API_KEY),
+                "psar": fetch_psar(request.symbol, settings.ALPHA_VANTAGE_API_KEY),
+            }
+            volume_features_ext = {
+                "cmf": fetch_chaikin_money_flow(request.symbol, settings.ALPHA_VANTAGE_API_KEY),
+                "adl": fetch_adl(request.symbol, settings.ALPHA_VANTAGE_API_KEY),
+            }
+        except Exception as e:
+            logger.error(f"Error fetching extended features for {request.symbol}: {str(e)}", exc_info=True)
+            # Assign error messages to all extended features if any one of them fails
+            extended_fundamentals = {"error": str(e)}
+            technical_indicators_ext = {"error": str(e)}
+            volume_features_ext = {"error": str(e)}
         
         try:
             latest_indicators_row = final_row_data.iloc[-1]
@@ -183,7 +209,11 @@ async def fetch_stock_data(request: StockDataRequest):
             technical_indicators=technical_indicators,
             volume_features=volume_features,
             fundamentals=fundamentals,
-            news_sentiment=news_sentiment
+            news_sentiment=news_sentiment,
+            advanced_news_sentiment=advanced_news_sentiment,
+            extended_fundamentals=extended_fundamentals,
+            technical_indicators_ext=technical_indicators_ext,
+            volume_features_ext=volume_features_ext
         )
     except HTTPException as e:
         raise e

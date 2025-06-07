@@ -109,7 +109,7 @@ RECOMMENDATION: [BUY, SELL, or HOLD]
 CONFIDENCE: [a number between 0.0 and 1.0, e.g., 0.75]
 TIME_FRAME: [The time frame for your prediction, e.g., "Next 5 trading days"]
 PRICE_PREDICTIONS:
-[Provide a day-by-day price prediction for the specified time frame. Each prediction MUST be on a new line, formatted as 'Day X: PRICE' or 'YYYY-MM-DD: PRICE'.]
+[Provide a day-by-day price prediction for the specified time frame. Each prediction MUST be on a new line, formatted as 'Day X: PRICE' or 'MM/DD/YYYY: PRICE'.]
 REASONING: [Your detailed analysis here. This can span multiple lines. Ensure subsequent lines of reasoning do not start with a keyword.]
 
 Example of the EXACT required format:
@@ -117,9 +117,9 @@ RECOMMENDATION: BUY
 CONFIDENCE: 0.80
 TIME_FRAME: Next 5 trading days
 PRICE_PREDICTIONS:
-Day 1: 175.50
-Day 2: 176.20
-Day 3: 175.80
+07/26/2024: 175.50
+07/27/2024: 176.20
+07/28/2024: 175.80
 REASONING: The stock shows strong bullish signals and is expected to rise.
 The technical indicators support a continued upward trend.
 
@@ -251,110 +251,78 @@ def parse_llm_response(response_data: Dict[str, Any]) -> Dict[str, Any]:
         if not stripped_line:
             continue
 
-        if stripped_line.upper().startswith("RECOMMENDATION:"):
-            recommendation_str = stripped_line[len("RECOMMENDATION:"):].strip()
-            parsing_state = None
-        elif stripped_line.upper().startswith("CONFIDENCE:"):
-            confidence_str = stripped_line[len("CONFIDENCE:"):].strip()
-            parsing_state = None
-        elif stripped_line.upper().startswith("TIME_FRAME:"):
-            time_frame_str = stripped_line[len("TIME_FRAME:"):].strip()
-            parsing_state = None
-        elif stripped_line.upper().startswith("PRICE_PREDICTIONS:"):
-            # This line only serves as a marker, the content is on the next lines
-            parsing_state = "predictions"
-        elif stripped_line.upper().startswith("REASONING:"):
-            reasoning_lines.append(stripped_line[len("REASONING:"):].strip())
-            parsing_state = "reasoning"
-        elif parsing_state == "predictions":
-            # Any line after PRICE_PREDICTIONS: and before REASONING: is a prediction
+        # Use regex to handle both 'Key: Value' and multiline values
+        match_key_value = re.match(r'^([A-Z_]+):\s*(.*)', stripped_line)
+
+        if match_key_value:
+            key = match_key_value.group(1)
+            value = match_key_value.group(2).strip()
+            parsing_state = None  # Reset state on a new key
+
+            if key == 'RECOMMENDATION':
+                recommendation_str = value
+            elif key == 'CONFIDENCE':
+                confidence_str = value
+            elif key == 'TIME_FRAME':
+                time_frame_str = value
+            elif key == 'PRICE_PREDICTIONS':
+                parsing_state = 'predictions'
+            elif key == 'REASONING':
+                parsing_state = 'reasoning'
+                if value:  # Capture reasoning on the same line
+                    reasoning_lines.append(value)
+        elif parsing_state == 'predictions':
             price_prediction_lines.append(stripped_line)
-        elif parsing_state == "reasoning":
-            # If we are in parsing_reasoning mode, append the whole line
+        elif parsing_state == 'reasoning':
             reasoning_lines.append(stripped_line)
-        elif recommendation_str and confidence_str and time_frame_str and stripped_line:
-            # Fallback for reasoning if it was not explicitly prefixed
-            logger.warn(f"REASONING: prefix missing. Assuming line starts reasoning: '{stripped_line[:100]}...'")
-            reasoning_lines.append(stripped_line)
-            parsing_state = "reasoning"
 
-    # --- Validation ---
-    if recommendation_str is None:
-        logger.error(f"Could not parse RECOMMENDATION. Raw response (first 500 chars): {response_text[:500]}")
-        raise HTTPException(status_code=500, detail="LLM response missing RECOMMENDATION.")
-    
-    recommendation = None
-    valid_recommendations = ["BUY", "SELL", "HOLD"]
-    # Try to find a valid recommendation even if there's extra text or wrong casing
-    rec_upper = recommendation_str.upper()
-    for valid_rec in valid_recommendations:
-        if valid_rec in rec_upper:
-            recommendation = valid_rec
-            break
-    
-    if recommendation is None:
-        logger.error(f"Invalid RECOMMENDATION value: '{recommendation_str}'. Expected one of {valid_recommendations}. Raw response: {response_text[:500]}")
-        raise HTTPException(status_code=500, detail=f"Invalid RECOMMENDATION value: '{recommendation_str}'. Expected one of {valid_recommendations}.")
+    # Validate required fields
+    if not all([recommendation_str, confidence_str, time_frame_str]):
+        raise HTTPException(
+            status_code=500,
+            detail=f"LLM response was missing one or more required fields: RECOMMENDATION, CONFIDENCE, or TIME_FRAME. Raw response: {response_text}"
+        )
 
-    if confidence_str is None:
-        logger.error(f"Could not parse CONFIDENCE. Raw response (first 500 chars): {response_text[:500]}")
-        raise HTTPException(status_code=500, detail="LLM response missing CONFIDENCE.")
-    
-    confidence = None
+    # Process and validate parsed values
     try:
-        # Attempt to extract a float from the string, e.g., "0.75", "0.7 whatever", "approx 0.8"
-        # This regex looks for a number like 0.x, .x, 0, 1
-        match = re.search(r'([01]?\.\d+|[01])', confidence_str)
-        if match:
-            confidence = float(match.group(1))
-            if not (0.0 <= confidence <= 1.0):
-                logger.error(f"CONFIDENCE value {confidence} out of range (0-1). Original str: '{confidence_str}'. Raw response: {response_text[:500]}")
-                raise ValueError("Confidence out of range")
-        else:
-            raise ValueError("No float-like number found in confidence string")
-            
-    except ValueError as e:
-        logger.error(f"Invalid CONFIDENCE value: '{confidence_str}'. Error: {e}. Raw response: {response_text[:500]}")
-        raise HTTPException(status_code=500, detail=f"Invalid CONFIDENCE value: '{confidence_str}'. Must be a number between 0.0 and 1.0.")
-
-    if not time_frame_str:
-        logger.error(f"Could not parse TIME_FRAME. Raw response: {response_text[:500]}")
-        raise HTTPException(status_code=500, detail="LLM response missing TIME_FRAME.")
-
-    price_predictions = {}
-    if not price_prediction_lines:
-        logger.error(f"Could not parse PRICE_PREDICTIONS or it is empty. Raw response: {response_text[:500]}")
-        raise HTTPException(status_code=500, detail="LLM response missing PRICE_PREDICTIONS or it is empty.")
-
-    for line in price_prediction_lines:
-        # This regex handles formats like "Day 1: 150.50", "2024-07-26: 155.0", etc.
-        match = re.match(r'([^:]+):\s*([\d\.]+)', line.strip())
-        if match:
-            key = match.group(1).strip()
-            try:
-                value = float(match.group(2))
-                price_predictions[key] = value
-            except ValueError:
-                logger.warn(f"Could not parse price value in PRICE_PREDICTIONS line: '{line}'")
-        else:
-            logger.warn(f"Skipping malformed PRICE_PREDICTIONS line: '{line}'")
-
-    if not price_predictions:
-        logger.error(f"Failed to parse any valid price predictions from lines: {price_prediction_lines}. Raw response: {response_text[:500]}")
-        raise HTTPException(status_code=500, detail="LLM response contained no valid PRICE_PREDICTIONS.")
-
-    reasoning = " ".join(reasoning_lines).strip()
-    if not reasoning: # Check if reasoning_lines was empty or only contained whitespace
-        logger.error(f"Could not parse REASONING or reasoning is empty. Raw response (first 500 chars): {response_text[:500]}")
-        raise HTTPException(status_code=500, detail="LLM response missing REASONING or reasoning is empty.")
+        recommendation = recommendation_str.upper()
+        if recommendation not in ["BUY", "SELL", "HOLD"]:
+            raise ValueError("Recommendation must be BUY, SELL, or HOLD.")
         
-    logger.info(f"Successfully parsed LLM response: Rec: {recommendation}, Conf: {confidence}, TF: {time_frame_str}, Predictions: {len(price_predictions)} found.")
+        confidence = float(confidence_str)
+        if not 0.0 <= confidence <= 1.0:
+            raise ValueError("Confidence must be between 0.0 and 1.0.")
+
+        price_predictions = {}
+        # Regex to capture Day X, YYYY-MM-DD, or MM/DD/YYYY formats
+        prediction_regex = re.compile(r'^(Day\s+\d+|(?:\d{4}-\d{2}-\d{2})|(?:\d{2}/\d{2}/\d{4})):\s*(\d+\.?\d*)')
+        for pred_line in price_prediction_lines:
+            match = prediction_regex.match(pred_line.strip())
+            if match:
+                day_key = match.group(1)
+                price_val = float(match.group(2))
+                price_predictions[day_key] = price_val
+
+        if not price_predictions and price_prediction_lines:
+             logger.warning(f"Could not parse any price predictions from lines: {price_prediction_lines}. Raw response: {response_text}")
+
+
+        reasoning = " ".join(reasoning_lines).strip()
+        if not reasoning:
+            raise ValueError("Reasoning cannot be empty.")
+
+    except (ValueError, TypeError) as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error parsing LLM response fields: {e}. Raw response: {response_text}"
+        )
+
     return {
         "recommendation": recommendation,
         "confidence": confidence,
-        "reasoning": reasoning,
         "time_frame": time_frame_str,
-        "price_predictions": price_predictions
+        "price_predictions": price_predictions,
+        "reasoning": reasoning
     }
 
 @app.get("/health")

@@ -1,4 +1,5 @@
 import requests
+import numpy as np
 
 def fetch_fundamentals(symbol: str, api_key: str) -> dict:
     overview_url = f"https://www.alphavantage.co/query?function=OVERVIEW&symbol={symbol}&apikey={api_key}"
@@ -64,45 +65,67 @@ def fetch_fundamentals(symbol: str, api_key: str) -> dict:
     
     return fundamentals
 
-def fetch_news_sentiment(symbol: str, api_key: str) -> dict:
-    """Fetch news sentiment data from Alpha Vantage for the given symbol."""
-    url = f"https://www.alphavantage.co/query?function=NEWS_SENTIMENT&tickers={symbol}&apikey={api_key}"
+def fetch_extended_fundamentals(symbol: str, api_key: str) -> dict:
+    """
+    Fetches extended fundamental data from OVERVIEW, INCOME_STATEMENT, and BALANCE_SHEET.
+    """
+    overview_url = f"https://www.alphavantage.co/query?function=OVERVIEW&symbol={symbol}&apikey={api_key}"
+    income_url = f"https://www.alphavantage.co/query?function=INCOME_STATEMENT&symbol={symbol}&apikey={api_key}"
+    balance_sheet_url = f"https://www.alphavantage.co/query?function=BALANCE_SHEET&symbol={symbol}&apikey={api_key}"
+
     try:
-        response = requests.get(url)
-        response.raise_for_status()
-        data = response.json()
-        if "Error Message" in data:
-            return {"error": data["Error Message"]}
-        if "Information" in data:
-            return {"error": data["Information"]}
-        # Alpha Vantage returns a list of news items with sentiment scores
-        feed = data.get("feed", [])
-        if not feed:
-            return {"sentiment_summary": "No news data available."}
-        # Aggregate sentiment
-        sentiment_counts = {"positive": 0, "neutral": 0, "negative": 0}
-        headlines = []
-        for item in feed:
-            sentiment = item.get("overall_sentiment_label", "neutral").lower()
-            if sentiment in sentiment_counts:
-                sentiment_counts[sentiment] += 1
-            else:
-                sentiment_counts["neutral"] += 1
-            headlines.append({
-                "title": item.get("title", ""),
-                "summary": item.get("summary", ""),
-                "sentiment": sentiment,
-                "relevance_score": item.get("relevance_score", None)
-            })
-        total = sum(sentiment_counts.values())
-        sentiment_score = (
-            (sentiment_counts["positive"] - sentiment_counts["negative"]) / total
-            if total > 0 else 0.0
-        )
+        overview_data = requests.get(overview_url).json()
+        income_data = requests.get(income_url).json()
+        balance_sheet_data = requests.get(balance_sheet_url).json()
+
+        def to_float(value):
+            if value is None or value == "None":
+                return np.nan
+            try:
+                return float(value)
+            except (ValueError, TypeError):
+                return np.nan
+
+        # From OVERVIEW
+        eps = to_float(overview_data.get("EPS"))
+        roe = to_float(overview_data.get("ReturnOnEquityTTM"))
+        operating_margin_ttm = to_float(overview_data.get("OperatingMarginTTM"))
+
+        # From INCOME_STATEMENT for Revenue Growth
+        annual_reports = income_data.get("annualReports", [])
+        revenue_growth = np.nan
+        if len(annual_reports) >= 2:
+            latest_revenue = to_float(annual_reports[0].get("totalRevenue"))
+            previous_revenue = to_float(annual_reports[1].get("totalRevenue"))
+            if latest_revenue and previous_revenue and previous_revenue > 0:
+                revenue_growth = (latest_revenue - previous_revenue) / previous_revenue
+
+        # From BALANCE_SHEET for Debt/Equity
+        annual_balance_sheets = balance_sheet_data.get("annualReports", [])
+        debt_equity_ratio = np.nan
+        if annual_balance_sheets:
+            latest_sheet = annual_balance_sheets[0]
+            total_liabilities = to_float(latest_sheet.get("totalLiabilities"))
+            total_shareholder_equity = to_float(latest_sheet.get("totalShareholderEquity"))
+            if total_shareholder_equity and total_shareholder_equity > 0:
+                debt_equity_ratio = total_liabilities / total_shareholder_equity
+        
+        # Free Cash Flow is not available from these endpoints.
+
         return {
-            "sentiment_score": sentiment_score,
-            "sentiment_counts": sentiment_counts,
-            "headlines": headlines[:5]  # Return up to 5 latest headlines
+            "eps": eps,
+            "revenue_growth_yoy": revenue_growth,
+            "roe": roe,
+            "debt_equity_ratio": debt_equity_ratio,
+            "operating_margin_ttm": operating_margin_ttm
         }
+
     except Exception as e:
-        return {"error": str(e)} 
+        print(f"Error fetching extended fundamentals for {symbol}: {e}")
+        return {
+            "eps": np.nan,
+            "revenue_growth_yoy": np.nan,
+            "roe": np.nan,
+            "debt_equity_ratio": np.nan,
+            "operating_margin_ttm": np.nan
+        } 
