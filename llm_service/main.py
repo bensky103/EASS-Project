@@ -352,6 +352,11 @@ async def predict_stock(request: PredictionRequest):
                 combined.update(data.get("volume_features", {}))
                 combined.update(data.get("fundamentals", {}))
                 news_sentiment = data.get("news_sentiment", {})
+                # Add new features
+                combined["advanced_news_sentiment"] = data.get("advanced_news_sentiment", {})
+                combined["extended_fundamentals"] = data.get("extended_fundamentals", {})
+                combined["technical_indicators_ext"] = data.get("technical_indicators_ext", {})
+                combined["volume_features_ext"] = data.get("volume_features_ext", {})
                 # Map to StockFeatures
                 features = StockFeatures(
                     latest_close=combined.get("latest_close", 0.0),
@@ -379,8 +384,15 @@ async def predict_stock(request: PredictionRequest):
                     dividend_yield=combined.get("dividend_yield", 0.0),
                     beta=combined.get("beta", 0.0)
                 )
-        
-        logger.info(f"Features for {request.symbol}: {features.model_dump_json(indent=2)}")
+        # Log all features including new ones
+        all_features = {
+            **features.model_dump(),
+            "advanced_news_sentiment": data.get("advanced_news_sentiment", {}),
+            "extended_fundamentals": data.get("extended_fundamentals", {}),
+            "technical_indicators_ext": data.get("technical_indicators_ext", {}),
+            "volume_features_ext": data.get("volume_features_ext", {})
+        }
+        logger.info(f"Features for {request.symbol}: {json.dumps(all_features, indent=2)}")
         
         # Format the prompt
         prompt = format_prompt(request.symbol, features, request.time_frame, news_sentiment)
