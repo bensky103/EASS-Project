@@ -65,12 +65,15 @@ class StockFeatures(BaseModel):
 class PredictionRequest(BaseModel):
     symbol: str
     features: StockFeatures | None = None
+    time_frame: str | None = Field(None, description="The desired time frame for the prediction (e.g., 'next 5 trading days').")
 
 class PredictionResponse(BaseModel):
     symbol: str
     recommendation: Literal["BUY", "SELL", "HOLD"]
     confidence: float = Field(..., ge=0.0, le=1.0)
     reasoning: str
+    time_frame: str = Field(..., description="The time frame for which the prediction is valid (e.g., 'Next 5 trading days').")
+    price_predictions: Dict[str, float] = Field(..., description="A dictionary of predicted prices, where keys are dates or day identifiers (e.g., 'Day 1', '2024-07-26') and values are the predicted prices.")
     timestamp: datetime = Field(default_factory=datetime.utcnow)
 
     @field_validator('confidence')
@@ -80,8 +83,13 @@ class PredictionResponse(BaseModel):
             raise ValueError('Confidence must be between 0 and 1')
         return v
 
-def format_prompt(symbol: str, features: StockFeatures, news_sentiment: dict = None) -> str:
-    """Format all features into a prompt for the LLM, including news sentiment."""
+def format_prompt(symbol: str, features: StockFeatures, time_frame: str | None = None, news_sentiment: dict = None) -> str:
+    """Format all features into a prompt for the LLM, including news sentiment and a desired time frame."""
+    
+    time_frame_instruction = "Your analysis should determine the most appropriate time frame for the prediction (e.g., next few days, 1 week, 1 month)."
+    if time_frame:
+        time_frame_instruction = f"Your analysis should be for the following time frame: {time_frame}."
+
     prompt = f"""Stock Symbol: {symbol}\n\n[TECHNICAL INDICATORS]\nLatest Close: {features.latest_close}\nSMA 5: {features.sma_5}\nEMA 5: {features.ema_5}\nMACD: {features.macd}\nMACD Signal: {features.macd_signal}\nMACD Histogram: {features.macd_hist}\nBollinger Bands - Upper: {features.bb_upper}, Middle: {features.bb_middle}, Lower: {features.bb_lower}\nOpen: {features.open}\nHigh: {features.high}\nLow: {features.low}\nVolume: {features.volume}\n\n[VOLUME FEATURES]\nLatest Volume: {features.latest_volume}\nAverage Volume: {features.volume_avg}\nVolume Spike: {features.volume_spike}\nOn-Balance Volume (OBV): {features.obv}\nVolume SMA: {features.volume_sma}\nVolume Ratio: {features.volume_ratio}\nVolume Trend: {features.volume_trend}\n\n[FUNDAMENTALS]\nMarket Cap: {features.market_cap}\nP/E Ratio: {features.pe_ratio}\nDividend Yield: {features.dividend_yield}\nBeta: {features.beta}\n"""
     if news_sentiment:
         prompt += "\\n[NEWS SENTIMENT]\\n"
@@ -90,25 +98,35 @@ def format_prompt(symbol: str, features: StockFeatures, news_sentiment: dict = N
         for h in news_sentiment.get('headlines', []):
             prompt += f"- {h.get('title', '')} (Sentiment: {h.get('sentiment', '')})\\n"
     
-    prompt += """ 
+    prompt += f""" 
 
 Instructions:
 Analyze the stock using all the above features, including news sentiment.
+{time_frame_instruction}
 Your entire response MUST be plain text. Do NOT use JSON or any other structured format.
 Return your response strictly in the following KEY: VALUE format, with each item on a new line:
 RECOMMENDATION: [BUY, SELL, or HOLD]
 CONFIDENCE: [a number between 0.0 and 1.0, e.g., 0.75]
+TIME_FRAME: [The time frame for your prediction, e.g., "Next 5 trading days"]
+PRICE_PREDICTIONS:
+[Provide a day-by-day price prediction for the specified time frame. Each prediction MUST be on a new line, formatted as 'Day X: PRICE' or 'YYYY-MM-DD: PRICE'.]
 REASONING: [Your detailed analysis here. This can span multiple lines. Ensure subsequent lines of reasoning do not start with a keyword.]
 
 Example of the EXACT required format:
-RECOMMENDATION: HOLD
-CONFIDENCE: 0.65
-REASONING: The stock is currently consolidating and showing mixed signals.
-It is advisable to wait for a clearer trend.
+RECOMMENDATION: BUY
+CONFIDENCE: 0.80
+TIME_FRAME: Next 5 trading days
+PRICE_PREDICTIONS:
+Day 1: 175.50
+Day 2: 176.20
+Day 3: 175.80
+REASONING: The stock shows strong bullish signals and is expected to rise.
+The technical indicators support a continued upward trend.
 
 Important:
-- Each keyword (RECOMMENDATION, CONFIDENCE, REASONING) must be at the beginning of its line.
-- Each keyword must be followed by a colon and a single space, then the value.
+- Each keyword (RECOMMENDATION, CONFIDENCE, TIME_FRAME, REASONING) must be at the beginning of its line.
+- PRICE_PREDICTIONS must be on its own line, followed by the day-by-day predictions on subsequent lines.
+- The REASONING keyword and its value must start on a new line AFTER all price predictions.
 - Do not include any other text, explanations, or conversational filler before the first keyword or after the reasoning.
 - The REASONING can be multi-line. All lines after "REASONING: " are part of the reasoning.
 """
@@ -222,38 +240,43 @@ def parse_llm_response(response_data: Dict[str, Any]) -> Dict[str, Any]:
     
     recommendation_str = None
     confidence_str = None
+    time_frame_str = None
+    price_prediction_lines = []
     reasoning_lines = []
     
-    parsing_reasoning = False
+    parsing_state = None  # Can be "predictions" or "reasoning"
 
     for line in lines:
         stripped_line = line.strip()
-        if not stripped_line:  # Skip empty lines if any
+        if not stripped_line:
             continue
 
         if stripped_line.upper().startswith("RECOMMENDATION:"):
             recommendation_str = stripped_line[len("RECOMMENDATION:"):].strip()
-            parsing_reasoning = False  # Stop parsing reasoning if we encounter other keywords
+            parsing_state = None
         elif stripped_line.upper().startswith("CONFIDENCE:"):
             confidence_str = stripped_line[len("CONFIDENCE:"):].strip()
-            parsing_reasoning = False
+            parsing_state = None
+        elif stripped_line.upper().startswith("TIME_FRAME:"):
+            time_frame_str = stripped_line[len("TIME_FRAME:"):].strip()
+            parsing_state = None
+        elif stripped_line.upper().startswith("PRICE_PREDICTIONS:"):
+            # This line only serves as a marker, the content is on the next lines
+            parsing_state = "predictions"
         elif stripped_line.upper().startswith("REASONING:"):
-            # Start of reasoning, take the rest of this line
             reasoning_lines.append(stripped_line[len("REASONING:"):].strip())
-            parsing_reasoning = True
-        elif parsing_reasoning:
+            parsing_state = "reasoning"
+        elif parsing_state == "predictions":
+            # Any line after PRICE_PREDICTIONS: and before REASONING: is a prediction
+            price_prediction_lines.append(stripped_line)
+        elif parsing_state == "reasoning":
             # If we are in parsing_reasoning mode, append the whole line
             reasoning_lines.append(stripped_line)
-        elif recommendation_str is not None and confidence_str is not None and stripped_line:
-            # Fallback: If recommendation and confidence are parsed,
-            # and this line isn't a keyword, and we are not yet parsing reasoning,
-            # assume this is the start of (an implicitly prefixed) reasoning.
+        elif recommendation_str and confidence_str and time_frame_str and stripped_line:
+            # Fallback for reasoning if it was not explicitly prefixed
             logger.warn(f"REASONING: prefix missing. Assuming line starts reasoning: '{stripped_line[:100]}...'")
-            reasoning_lines.append(stripped_line) # Add the line as is
-            parsing_reasoning = True # From now on, append subsequent lines
-        # Optional: Log unexpected lines if not parsing reasoning and not a keyword
-        # else:
-        #     logger.warn(f"LLM response contained unexpected line: '{stripped_line[:200]}...'")
+            reasoning_lines.append(stripped_line)
+            parsing_state = "reasoning"
 
     # --- Validation ---
     if recommendation_str is None:
@@ -281,7 +304,7 @@ def parse_llm_response(response_data: Dict[str, Any]) -> Dict[str, Any]:
     try:
         # Attempt to extract a float from the string, e.g., "0.75", "0.7 whatever", "approx 0.8"
         # This regex looks for a number like 0.x, .x, 0, 1
-        match = re.search(r'([01]?\\.\\d+|[01])', confidence_str)
+        match = re.search(r'([01]?\.\d+|[01])', confidence_str)
         if match:
             confidence = float(match.group(1))
             if not (0.0 <= confidence <= 1.0):
@@ -294,16 +317,44 @@ def parse_llm_response(response_data: Dict[str, Any]) -> Dict[str, Any]:
         logger.error(f"Invalid CONFIDENCE value: '{confidence_str}'. Error: {e}. Raw response: {response_text[:500]}")
         raise HTTPException(status_code=500, detail=f"Invalid CONFIDENCE value: '{confidence_str}'. Must be a number between 0.0 and 1.0.")
 
+    if not time_frame_str:
+        logger.error(f"Could not parse TIME_FRAME. Raw response: {response_text[:500]}")
+        raise HTTPException(status_code=500, detail="LLM response missing TIME_FRAME.")
+
+    price_predictions = {}
+    if not price_prediction_lines:
+        logger.error(f"Could not parse PRICE_PREDICTIONS or it is empty. Raw response: {response_text[:500]}")
+        raise HTTPException(status_code=500, detail="LLM response missing PRICE_PREDICTIONS or it is empty.")
+
+    for line in price_prediction_lines:
+        # This regex handles formats like "Day 1: 150.50", "2024-07-26: 155.0", etc.
+        match = re.match(r'([^:]+):\s*([\d\.]+)', line.strip())
+        if match:
+            key = match.group(1).strip()
+            try:
+                value = float(match.group(2))
+                price_predictions[key] = value
+            except ValueError:
+                logger.warn(f"Could not parse price value in PRICE_PREDICTIONS line: '{line}'")
+        else:
+            logger.warn(f"Skipping malformed PRICE_PREDICTIONS line: '{line}'")
+
+    if not price_predictions:
+        logger.error(f"Failed to parse any valid price predictions from lines: {price_prediction_lines}. Raw response: {response_text[:500]}")
+        raise HTTPException(status_code=500, detail="LLM response contained no valid PRICE_PREDICTIONS.")
+
     reasoning = " ".join(reasoning_lines).strip()
     if not reasoning: # Check if reasoning_lines was empty or only contained whitespace
         logger.error(f"Could not parse REASONING or reasoning is empty. Raw response (first 500 chars): {response_text[:500]}")
         raise HTTPException(status_code=500, detail="LLM response missing REASONING or reasoning is empty.")
         
-    logger.info(f"Successfully parsed LLM response: Rec: {recommendation}, Conf: {confidence}, Reason (start): {reasoning[:100]}...")
+    logger.info(f"Successfully parsed LLM response: Rec: {recommendation}, Conf: {confidence}, TF: {time_frame_str}, Predictions: {len(price_predictions)} found.")
     return {
         "recommendation": recommendation,
         "confidence": confidence,
-        "reasoning": reasoning
+        "reasoning": reasoning,
+        "time_frame": time_frame_str,
+        "price_predictions": price_predictions
     }
 
 @app.get("/health")
@@ -360,8 +411,11 @@ async def predict_stock(request: PredictionRequest):
                     dividend_yield=combined.get("dividend_yield", 0.0),
                     beta=combined.get("beta", 0.0)
                 )
+        
+        logger.info(f"Features for {request.symbol}: {features.model_dump_json(indent=2)}")
+        
         # Format the prompt
-        prompt = format_prompt(request.symbol, features, news_sentiment)
+        prompt = format_prompt(request.symbol, features, request.time_frame, news_sentiment)
         logger.info("Prompt formatted successfully")
         # Call Ollama
         llm_response = await call_ollama(prompt)
@@ -374,7 +428,9 @@ async def predict_stock(request: PredictionRequest):
             symbol=request.symbol,
             recommendation=parsed_response["recommendation"],
             confidence=parsed_response["confidence"],
-            reasoning=parsed_response["reasoning"]
+            reasoning=parsed_response["reasoning"],
+            time_frame=parsed_response["time_frame"],
+            price_predictions=parsed_response["price_predictions"]
         )
         logger.info(f"Successfully generated prediction for {request.symbol}")
         return response
