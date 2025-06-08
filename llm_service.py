@@ -117,6 +117,7 @@ def parse_llm_response(response: Dict[str, Any]) -> Dict[str, Any]:
     try:
         # Extract the response text from Ollama's response
         response_text = response.get("response", "")
+        logger.info(f"Raw response from Ollama: {response_text}")
         
         # Find the JSON part of the response
         start_idx = response_text.find("{")

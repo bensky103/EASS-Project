@@ -86,11 +86,13 @@ class PredictionResponse(BaseModel):
 def format_prompt(symbol: str, features: StockFeatures, time_frame: str | None = None, news_sentiment: dict = None) -> str:
     """Format all features into a prompt for the LLM, including news sentiment and a desired time frame."""
     
+    current_date = datetime.now().strftime("%Y-%m-%d")
     time_frame_instruction = "Your analysis should determine the most appropriate time frame for the prediction (e.g., next few days, 1 week, 1 month)."
     if time_frame:
         time_frame_instruction = f"Your analysis should be for the following time frame: {time_frame}."
 
-    prompt = f"""Stock Symbol: {symbol}\n\n[TECHNICAL INDICATORS]\nLatest Close: {features.latest_close}\nSMA 5: {features.sma_5}\nEMA 5: {features.ema_5}\nMACD: {features.macd}\nMACD Signal: {features.macd_signal}\nMACD Histogram: {features.macd_hist}\nBollinger Bands - Upper: {features.bb_upper}, Middle: {features.bb_middle}, Lower: {features.bb_lower}\nOpen: {features.open}\nHigh: {features.high}\nLow: {features.low}\nVolume: {features.volume}\n\n[VOLUME FEATURES]\nLatest Volume: {features.latest_volume}\nAverage Volume: {features.volume_avg}\nVolume Spike: {features.volume_spike}\nOn-Balance Volume (OBV): {features.obv}\nVolume SMA: {features.volume_sma}\nVolume Ratio: {features.volume_ratio}\nVolume Trend: {features.volume_trend}\n\n[FUNDAMENTALS]\nMarket Cap: {features.market_cap}\nP/E Ratio: {features.pe_ratio}\nDividend Yield: {features.dividend_yield}\nBeta: {features.beta}\n"""
+    prompt = f"""Current Date: {current_date}
+Stock Symbol: {symbol}\n\n[TECHNICAL INDICATORS]\nLatest Close: {features.latest_close}\nSMA 5: {features.sma_5}\nEMA 5: {features.ema_5}\nMACD: {features.macd}\nMACD Signal: {features.macd_signal}\nMACD Histogram: {features.macd_hist}\nBollinger Bands - Upper: {features.bb_upper}, Middle: {features.bb_middle}, Lower: {features.bb_lower}\nOpen: {features.open}\nHigh: {features.high}\nLow: {features.low}\nVolume: {features.volume}\n\n[VOLUME FEATURES]\nLatest Volume: {features.latest_volume}\nAverage Volume: {features.volume_avg}\nVolume Spike: {features.volume_spike}\nOn-Balance Volume (OBV): {features.obv}\nVolume SMA: {features.volume_sma}\nVolume Ratio: {features.volume_ratio}\nVolume Trend: {features.volume_trend}\n\n[FUNDAMENTALS]\nMarket Cap: {features.market_cap}\nP/E Ratio: {features.pe_ratio}\nDividend Yield: {features.dividend_yield}\nBeta: {features.beta}\n"""
     if news_sentiment:
         prompt += "\\n[NEWS SENTIMENT]\\n"
         prompt += f"Sentiment Score: {news_sentiment.get('sentiment_score', 'N/A')}\\n"
@@ -109,17 +111,19 @@ RECOMMENDATION: [BUY, SELL, or HOLD]
 CONFIDENCE: [a number between 0.0 and 1.0, e.g., 0.75]
 TIME_FRAME: [The time frame for your prediction, e.g., "Next 5 trading days"]
 PRICE_PREDICTIONS:
-[Provide a day-by-day price prediction for the specified time frame. Each prediction MUST be on a new line, formatted as 'Day X: PRICE' or 'MM/DD/YYYY: PRICE'.]
+[Provide a day-by-day price prediction for the specified time frame. Each prediction MUST be on a new line, formatted as 'Day X: PRICE'. For predictions over a number of days, use 'YYYY-MM-DD' format.]
 REASONING: [Your detailed analysis here. This can span multiple lines. Ensure subsequent lines of reasoning do not start with a keyword.]
 
-Example of the EXACT required format:
+Example of the EXACT required format (change the dates in the PRICE_PREDICTIONS to the current date):
 RECOMMENDATION: BUY
 CONFIDENCE: 0.80
 TIME_FRAME: Next 5 trading days
 PRICE_PREDICTIONS:
-07/26/2024: 175.50
-07/27/2024: 176.20
-07/28/2024: 175.80
+2025/06/08: 175.50
+2025/06/09: 176.20
+2025/06/10: 175.80
+2025/06/11: 176.50
+2025/06/12: 177.00
 REASONING: The stock shows strong bullish signals and is expected to rise.
 The technical indicators support a continued upward trend.
 
