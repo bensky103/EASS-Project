@@ -1,0 +1,11 @@
+__pycache__/
+.env
+node_modules/
+dist/
+build/
+.vscode/
+.DS_Store
+gpull.sh
+gpush.sh
+pytest.txt
+llm_serviceLogs.txt

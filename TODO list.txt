@@ -1,0 +1,100 @@
+1. Set this directory structure:
+
+stock-predictor/                 ← Project root
+├── auth-service/                ← Microservice #1: user auth (FastAPI + MongoDB)
+│   ├── app/
+│   │   ├── main.py              ← FastAPI entrypoint
+│   │   ├── models.py            ← Pydantic + Motor ODM models
+│   │   ├── routes.py            ← /register, /login, /profile, /watchlist
+│   │   └── dependencies.py      ← JWT & DB connection
+│   ├── Dockerfile
+│   └── requirements.txt
+│
+├── stock-data-service/          ← Microservice #2: live/historical data (FastAPI)
+│   ├── app/
+│   │   ├── main.py              ← FastAPI entrypoint
+│   │   ├── client.py            ← httpx client for external APIs
+│   │   └── routes.py            ← /stock/{symbol}
+│   ├── Dockerfile
+│   └── requirements.txt
+│
+├── model-service/               ← Microservice #3: your GRU predictor
+│   ├── app/
+│   │   ├── main.py              ← FastAPI entrypoint (`/predict`)
+│   │   ├── model_service.py     ← loads model.pth, scaler.pkl, predict()
+│   │   ├── model.pth            ← trained GRU weights
+│   │   └── scaler.pkl           ← fitted MinMaxScaler
+│   ├── Dockerfile
+│   └── requirements.txt
+│
+├── stock-frontend/              ← React frontend
+│   ├── public/
+│   ├── src/
+│   │   ├── components/          ← UI bits (ProtectedRoute, Navbar…)
+│   │   ├── pages/               ← Login.tsx, Register.tsx, Home.tsx, Watchlist.tsx
+│   │   ├── services/            ← axios wrappers for auth, model, stock data
+│   │   └── App.tsx              ← router setup
+│   ├── Dockerfile               ← to build & serve frontend
+│   ├── package.json
+│   └── tailwind.config.js       ← if using Tailwind
+│
+├── docker-compose.yml           ← orchestrates all 4 services + Mongo
+└── README.md                    ← top-level documentation
+
+2. Fix dockerfile to use requirments.txt #DONE!
+3. Set env variables in docker_compose.yml to actually be fetched from a .env file #DONE!
+4. Change finnhub stock service to either Yahoo Finance or Alpha Vantage #DONE!
+5. Fix errors presented after docker compose run --rm tests pytest -v #DONE!
+
+# Frontend TODO List (as of June 19, 2025)
+
+## Pages to Keep/Refactor
+- [x] /login (LoginPage.tsx under features/auth/pages)
+- [x] /register (RegisterPage.tsx under features/auth/pages)
+- [x] /landing (LandingPage.tsx)
+- [x] /dashboard (Home.tsx)
+- [x] /watchlist (Watchlist.tsx)
+
+## UI/UX Improvements
+- [ ] Improve styling for Login and Register pages (make more modern, user-friendly)
+- [ ] Touch up Landing Page (visual polish, clear CTA)
+
+## Watchlist Integration
+- [ ] Connect /watchlist to backend
+    - [ ] When a user makes a prediction, add the stock ticker to their watchlist in the backend
+    - [ ] Display the user's watchlist (stock tickers) on the /watchlist page
+
+## Additional Pages/Features to Consider
+- [ ] Profile page (/profile):
+    - Show user info, allow password change, etc.
+- [ ] Prediction history page (/history):
+    - List all past predictions for the user
+- [ ] Stock details page (/stock/:symbol):
+    - Show detailed info, charts, and prediction results for a specific stock
+- [ ] 404 Not Found page:
+    - Friendly error page for unknown routes
+- [ ] Navbar/Header component:
+    - Navigation links, user menu, logout, etc.
+- [ ] (Optional) Settings page:
+    - Notification preferences, theme, etc.
+
+## General
+- [ ] Remove unused/duplicate login and register pages (keep only under features/auth/pages)
+- [ ] Ensure all routes are public for now (no ProtectedRoute)
+- [ ] Consistent use of shadcn/ui and Tailwind for all UI
+
+## Performance & Testing
+- [ ] Integrate Redis caching:
+    - Use Redis to cache stock data, predictions, or user sessions for performance
+    - Add backend endpoints to leverage cache where appropriate
+- [ ] Add loading spinners and error handling to all async frontend actions
+- [ ] Responsive/mobile-friendly design for all pages
+- [ ] Unit and integration tests for frontend (Jest, React Testing Library)
+- [ ] End-to-end tests (Cypress or Playwright)
+- [ ] Accessibility improvements (a11y best practices)
+- [ ] Add user feedback (toasts, alerts) for actions like login, prediction, etc.
+- [ ] API rate limit handling and user messaging
+- [ ] Documentation for frontend setup and usage
+
+---
+Add or check off items as progress is made!
