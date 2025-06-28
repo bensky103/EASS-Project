@@ -28,37 +28,37 @@ app.add_middleware(
 
 class StockFeatures(BaseModel):
     # technical_indicators
-    latest_close: float
-    sma_5: float
-    ema_5: float
-    macd: float
-    macd_signal: float
-    macd_hist: float
-    bb_upper: float
-    bb_middle: float
-    bb_lower: float
-    open: float
-    high: float
-    low: float
-    volume: int
+    latest_close: float | None = None
+    sma_5: float | None = None
+    ema_5: float | None = None
+    macd: float | None = None
+    macd_signal: float | None = None
+    macd_hist: float | None = None
+    bb_upper: float | None = None
+    bb_middle: float | None = None
+    bb_lower: float | None = None
+    open: float | None = None
+    high: float | None = None
+    low: float | None = None
+    volume: int | None = None
     # volume_features
-    latest_volume: int
-    volume_avg: float
-    volume_spike: int
-    obv: int
-    volume_sma: float
-    volume_ratio: float
-    volume_trend: str
+    latest_volume: int | None = None
+    volume_avg: float | None = None
+    volume_spike: int | None = None
+    obv: int | None = None
+    volume_sma: float | None = None
+    volume_ratio: float | None = None
+    volume_trend: str | None = None
     # fundamentals
-    market_cap: int
-    pe_ratio: float
-    dividend_yield: float
-    beta: float
+    market_cap: int | None = None
+    pe_ratio: float | None = None
+    dividend_yield: float | None = None
+    beta: float | None = None
 
     @field_validator('volume')
     @classmethod
-    def validate_volume(cls, v: int) -> int:
-        if v < 0:
+    def validate_volume(cls, v: int | None) -> int | None:
+        if v is not None and v < 0:
             raise ValueError('Volume cannot be negative')
         return v
 
@@ -85,14 +85,16 @@ class PredictionResponse(BaseModel):
 
 def format_prompt(symbol: str, features: StockFeatures, time_frame: str | None = None, news_sentiment: dict = None) -> str:
     """Format all features into a prompt for the LLM, including news sentiment and a desired time frame."""
-    
+    def show(val):
+        return "N/A" if val is None else val
+
     current_date = datetime.now().strftime("%Y-%m-%d")
     time_frame_instruction = "Your analysis should determine the most appropriate time frame for the prediction (e.g., next few days, 1 week, 1 month)."
     if time_frame:
         time_frame_instruction = f"Your analysis should be for the following time frame: {time_frame}."
 
     prompt = f"""Current Date: {current_date}
-Stock Symbol: {symbol}\n\n[TECHNICAL INDICATORS]\nLatest Close: {features.latest_close}\nSMA 5: {features.sma_5}\nEMA 5: {features.ema_5}\nMACD: {features.macd}\nMACD Signal: {features.macd_signal}\nMACD Histogram: {features.macd_hist}\nBollinger Bands - Upper: {features.bb_upper}, Middle: {features.bb_middle}, Lower: {features.bb_lower}\nOpen: {features.open}\nHigh: {features.high}\nLow: {features.low}\nVolume: {features.volume}\n\n[VOLUME FEATURES]\nLatest Volume: {features.latest_volume}\nAverage Volume: {features.volume_avg}\nVolume Spike: {features.volume_spike}\nOn-Balance Volume (OBV): {features.obv}\nVolume SMA: {features.volume_sma}\nVolume Ratio: {features.volume_ratio}\nVolume Trend: {features.volume_trend}\n\n[FUNDAMENTALS]\nMarket Cap: {features.market_cap}\nP/E Ratio: {features.pe_ratio}\nDividend Yield: {features.dividend_yield}\nBeta: {features.beta}\n"""
+Stock Symbol: {symbol}\n\n[TECHNICAL INDICATORS]\nLatest Close: {show(features.latest_close)}\nSMA 5: {show(features.sma_5)}\nEMA 5: {show(features.ema_5)}\nMACD: {show(features.macd)}\nMACD Signal: {show(features.macd_signal)}\nMACD Histogram: {show(features.macd_hist)}\nBollinger Bands - Upper: {show(features.bb_upper)}, Middle: {show(features.bb_middle)}, Lower: {show(features.bb_lower)}\nOpen: {show(features.open)}\nHigh: {show(features.high)}\nLow: {show(features.low)}\nVolume: {show(features.volume)}\n\n[VOLUME FEATURES]\nLatest Volume: {show(features.latest_volume)}\nAverage Volume: {show(features.volume_avg)}\nVolume Spike: {show(features.volume_spike)}\nOn-Balance Volume (OBV): {show(features.obv)}\nVolume SMA: {show(features.volume_sma)}\nVolume Ratio: {show(features.volume_ratio)}\nVolume Trend: {show(features.volume_trend)}\n\n[FUNDAMENTALS]\nMarket Cap: {show(features.market_cap)}\nP/E Ratio: {show(features.pe_ratio)}\nDividend Yield: {show(features.dividend_yield)}\nBeta: {show(features.beta)}\n"""
     if news_sentiment:
         prompt += "\\n[NEWS SENTIMENT]\\n"
         prompt += f"Sentiment Score: {news_sentiment.get('sentiment_score', 'N/A')}\\n"
@@ -298,9 +300,10 @@ def parse_llm_response(response_data: Dict[str, Any]) -> Dict[str, Any]:
             raise ValueError("Confidence must be between 0.0 and 1.0.")
 
         price_predictions = {}
-        # Regex to capture Day X, YYYY-MM-DD, or MM/DD/YYYY formats
-        prediction_regex = re.compile(r'^(Day\s+\d+|(?:\d{4}-\d{2}-\d{2})|(?:\d{2}/\d{2}/\d{4})):\s*(\d+\.?\d*)')
+        # Regex to capture Day X, YYYY-MM-DD, or YYYY/MM/DD formats, robust to whitespace
+        prediction_regex = re.compile(r'^(Day\s+\d+|\d{4}-\d{2}-\d{2}|\d{4}/\d{2}/\d{2})\s*:\s*([\d.]+)')
         for pred_line in price_prediction_lines:
+            logger.info(f"Parsing price prediction line: {repr(pred_line.strip())}")
             match = prediction_regex.match(pred_line.strip())
             if match:
                 day_key = match.group(1)

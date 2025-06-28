@@ -1,11 +1,6 @@
 import axios from 'axios';
 
-const API_URL   = import.meta.env.VITE_API_URL;
-const AUTH_URL  = `${API_URL}/auth`;
-const USER_URL  = `${API_URL}/user`;
-const STOCK_URL = `${API_URL}/stock`;
-
-const api = axios.create({ baseURL: API_URL });
+const api = axios.create();
 
 // Attach token to every request
 api.interceptors.request.use(config => {
@@ -29,20 +24,27 @@ api.interceptors.response.use(
 );
 
 export const authService = {
-  login:    (email: string, password: string) => api.post(`${AUTH_URL}/login`,    { email, password }),
-  register: (email: string, password: string) => api.post(`${AUTH_URL}/register`, { email, password }),
+  login:    (email: string, password: string) => api.post(`/auth/login`,    { email, password }),
+  register: (email: string, password: string) => api.post(`/auth/register`, { email, password }),
 };
 
 export const userService = {
-  getWatchlist:       () => api.get<string[]>(`${USER_URL}/watchlist`),
-  addToWatchlist:     (symbol: string) => api.post(`${USER_URL}/watchlist`, { symbol }),
+  getWatchlist:       () => api.get<string[]>(`/user/watchlist`),
+  addToWatchlist:     (symbol: string) => api.post(`/user/watchlist`, { symbol }),
   removeFromWatchlist: (symbol: string) =>
-    api.delete(`${USER_URL}/watchlist/${encodeURIComponent(symbol)}`),
+    api.delete(`/user/watchlist/${encodeURIComponent(symbol)}`),
+  getPredictions:     () => api.get(`/user/predictions`),
+  getWatchlistData:   () => api.get(`/user/watchlist/data`),
+  getWatchlistTickerData: (ticker: string) => api.get(`/user/watchlist/${encodeURIComponent(ticker)}`),
 };
 
 export const stockService = {
   getStockData: (symbol: string) =>
-    api.get<Array<{ date: string; price: number }>>(`${STOCK_URL}/${symbol}`),
+    api.get<Array<{ date: string; price: number }>>(`/stock/${symbol}`),
+};
+
+export const predictService = {
+  predict: (ticker: string) => api.post('/llm_service/predict', { symbol: ticker }),
 };
 
 export default api;

@@ -41,23 +41,12 @@ stock-predictor/                 ← Project root
 ├── docker-compose.yml           ← orchestrates all 4 services + Mongo
 └── README.md                    ← top-level documentation
 
-2. Fix dockerfile to use requirments.txt #DONE!
-3. Set env variables in docker_compose.yml to actually be fetched from a .env file #DONE!
-4. Change finnhub stock service to either Yahoo Finance or Alpha Vantage #DONE!
-5. Fix errors presented after docker compose run --rm tests pytest -v #DONE!
-
 # Frontend TODO List (as of June 19, 2025)
-
-## Pages to Keep/Refactor
-- [x] /login (LoginPage.tsx under features/auth/pages)
-- [x] /register (RegisterPage.tsx under features/auth/pages)
-- [x] /landing (LandingPage.tsx)
-- [x] /dashboard (Home.tsx)
-- [x] /watchlist (Watchlist.tsx)
 
 ## UI/UX Improvements
 - [ ] Improve styling for Login and Register pages (make more modern, user-friendly)
 - [ ] Touch up Landing Page (visual polish, clear CTA)
+- [ ] Make a prettier empty watch list (UI/UX improvement for when the user's watchlist is empty)
 
 ## Watchlist Integration
 - [ ] Connect /watchlist to backend
@@ -79,22 +68,169 @@ stock-predictor/                 ← Project root
     - Notification preferences, theme, etc.
 
 ## General
-- [ ] Remove unused/duplicate login and register pages (keep only under features/auth/pages)
-- [ ] Ensure all routes are public for now (no ProtectedRoute)
 - [ ] Consistent use of shadcn/ui and Tailwind for all UI
 
 ## Performance & Testing
-- [ ] Integrate Redis caching:
-    - Use Redis to cache stock data, predictions, or user sessions for performance
-    - Add backend endpoints to leverage cache where appropriate
 - [ ] Add loading spinners and error handling to all async frontend actions
-- [ ] Responsive/mobile-friendly design for all pages
 - [ ] Unit and integration tests for frontend (Jest, React Testing Library)
 - [ ] End-to-end tests (Cypress or Playwright)
 - [ ] Accessibility improvements (a11y best practices)
-- [ ] Add user feedback (toasts, alerts) for actions like login, prediction, etc.
-- [ ] API rate limit handling and user messaging
 - [ ] Documentation for frontend setup and usage
+
+## AI Prediction & Integration
+- [x] Connect the 'Generate AI powered prediction' button to the /predict endpoint
+- [x] Create in v0 a /predict endpoint
+- [x] Connect the /predict endpoint so that after each prediction, it gets added to the /watchlist automaticall
+- [x] Add to /predict a table with prediction history, a make prediction bar, a loading bar, and any other useful UI/UX suggestions
+- [x] Connect the endpoints to the backend: after submitting a prediction, route to /fetch datapoint to fetch data, then send that data to the /predict endpoint to the LLM to generate a prediction
+- [ ] Dockerize the frontend
+
+## Backend TODO List
+- [x] Remove mock data logic for NVDA, AAPL, TSLA from backend after testing is complete
+- [x] Add support to free API prediction (i.e. accept null objects, if premium API is required just assign null value and submit as is to LLM for prediction)
+- [x] Check via ticker for duplicated entries, replace existing entries with new predictions
+- [ ] The backend should have this structure in mongoDB:
+{
+        ticker: 'AAPL',
+        prediction: {
+          symbol: 'AAPL',
+          technical_indicators: {
+            latest_close: 142.63,
+            sma_5: 141.496,
+            ema_5: 141.0139172984321,
+            macd: 6.234237403478346,
+            macd_signal: 6.213458398480718,
+            macd_hist: 0.020779004997628192,
+            bb_upper: 143.25329792579598,
+            bb_middle: 141.496,
+            bb_lower: 139.73870207420404,
+            open: 143.19,
+            high: 145,
+            low: 141.94,
+            volume: 185114494,
+            rsi: 68.2092
+          },
+          volume_features: {
+            latest_volume: 185114494,
+            volume_avg: 218938040.24137932,
+            volume_spike: 0,
+            obv: 1760547081,
+            volume_sma: 218938040.24137932,
+            volume_ratio: 0.8455108751129368,
+            volume_trend: 'decreasing'
+          },
+          fundamentals: {
+            market_cap: 0,
+            pe_ratio: 46.01,
+            dividend_yield: 0.0003,
+            beta: 2.122
+          },
+          news_sentiment: {
+            sentiment_score: 0,
+            sentiment_counts: { positive: 0, neutral: 50, negative: 0 },
+            headlines: [
+              {
+                title: 'Speculative Fever Highest Since 2021; Make China Great Again - Invesco QQQ Trust, Series 1  ( NASDAQ:QQQ ) , Alphabet  ( NASDAQ:GOOG ) ',
+                summary: 'To gain an edge, this is what you need to know today. Please click here for an enlarged chart of Invesco QQQ Trust Series 1 QQQ. TACO trade ( Trump Always Chickens Out ) Not only the momo crowd, but also Wall Street has come to believe that tariffs are no longer an issue.',
+                sentiment: 'somewhat-bullish',
+                relevance_score: null
+              },
+              {
+                title: 'Broadcom Dips 6% Post Q2 Earnings: Is the AVGO Stock Still a Buy?',
+                summary: "AVGO's strong portfolio and growing security footprint, as well as expanding AI offerings, make its top-line growth prospects bright.",
+                sentiment: 'somewhat-bullish',
+                relevance_score: null
+              },
+              {
+                title: "Recursion Pharmaceuticals Stock Is Up 10% Today: What's Happening? - Recursion Pharmaceuticals  ( NASDAQ:RXRX ) ",
+                summary: "Recursion Pharmaceuticals announces a workforce reduction of approximately 20%. The Nvidia-backed company expects the move to extend its cash runway into the fourth quarter of 2027. Get access to the leaderboards pointing to tomorrow's biggest stock movers.",
+                sentiment: 'somewhat-bullish',
+                relevance_score: null
+              },
+              {
+                title: '3 AI Stocks Flashing Bullish Momentum',
+                summary: 'The AI trade has jumped back into favor over recent weeks following some strong quarterly releases, with AI favorites such as NVIDIA, Innodata, and Broadcom all seeing big gains.',
+                sentiment: 'somewhat-bullish',
+                relevance_score: null
+              },
+              {
+                title: 'APLD Doubles Down on AI/ML Hosting With Landmark CoreWeave Lease',
+                summary: 'Applied Digital secures a $7 billion, 15-year lease with CoreWeave, fueling its shift to a pure-play AI infrastructure.',
+                sentiment: 'somewhat-bullish',
+                relevance_score: null
+              }
+            ]
+          },
+          advanced_news_sentiment: {
+            avg_sentiment_7d: 0.21933303865406814,
+            headline_counts_7d: {
+              '2025-06-04': 57,
+              '2025-06-05': 53,
+              '2025-06-06': 47,
+              '2025-06-09': 38,
+              '2025-06-10': 34,
+              '2025-06-07': 20,
+              '2025-06-08': 15,
+              '2025-06-03': 4
+            },
+            sentiment_momentum: 2e-8
+          },
+          extended_fundamentals: {
+            eps: 3.1,
+            revenue_growth_yoy: 1.1420340763599357,
+            roe: 1.155,
+            debt_equity_ratio: 0.4068476054811098,
+            operating_margin_ttm: 0.491
+          },
+          technical_indicators_ext: {
+            aroon: { 'aroon down': 28.5714, 'aroon up': 100 },
+            adx: { adx: 33.8323 },
+            stoch: { slowk: 67.8933, slowd: 72.6226 },
+            cci: { cci: 139.2699 },
+            psar: {}
+          },
+          volume_features_ext: { cmf: {}, adl: {} },
+          reasoning: {
+            summary: 'This is a mock AI-generated summary for the stock. The model analyzed recent trends and news to provide this insight.',
+            factors: [
+              'Strong earnings report',
+              'Positive news sentiment',
+              'Technical breakout above resistance'
+            ],
+            risks: [
+              'Market volatility',
+              'Regulatory uncertainty',
+              'Potential overbought conditions'
+            ]
+          }
+        }
+
+        What we currently have:
+        {
+        ticker: 'MSFT',
+        prediction: {
+          symbol: 'MSFT',
+          recommendation: 'BUY',
+          confidence: 0.85,
+          reasoning: "The technical indicators show a strong bullish trend, with the MACD and RSI both indicating an upward momentum. The stock has recently broken above its Bollinger Bands, suggesting further upside potential. Additionally, the news sentiment is largely positive, with multiple articles highlighting Microsoft's strengths in various industries. This combination of technical and fundamental factors suggests that the stock will continue to rise over the next few days.",
+          time_frame: 'Next 5 trading days',
+          price_predictions: {
+            '2025-06-28': 505.5,
+            '2025-06-29': 507.2,
+            '2025-06-30': 506.8,
+            '2025-07-01': 508.5,
+            '2025-07-02': 509
+          },
+          timestamp: '2025-06-27T16:44:36.354405'
+        },
+        timestamp: '2025-06-27T16:44:36.430897'
+      }
+
+
+## Frontend TODO List
+- [x] Remove the mock data endpoint from the frontend and revert stock data fetching to use the /predict proxy endpoint after testing
+- [x] Revert Predict.tsx to use only the backend predictService.predict call and remove getMockStockData logic after testing
+- [x] Revert Predict.tsx 'View Watchlist' button logic to use Link if needed after testing
 
 ---
 Add or check off items as progress is made!

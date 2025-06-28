@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
-import { useAuth } from "../../../features/auth/hooks/useAuth";
+import { useAuth } from "@/features/auth/context/AuthContext";
 
 // Utility for className merging (optional, can be replaced with clsx or similar)
 function cn(...classes: (string | boolean | undefined)[]) {

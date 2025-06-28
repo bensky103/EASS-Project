@@ -192,6 +192,14 @@ async def fetch_stock_data(request: StockDataRequest):
                 "low": float(latest_indicators_row["low"]) if "low" in latest_indicators_row and pd.notna(latest_indicators_row["low"]) else latest_indicators_row.get("close"),
                 "volume": float(latest_indicators_row["volume"]) if "volume" in latest_indicators_row and pd.notna(latest_indicators_row["volume"]) else 0.0,
             }
+            # Add previous_close for frontend price change calculation
+            try:
+                if len(df_with_indicators) > 1:
+                    technical_indicators["previous_close"] = float(df_with_indicators.iloc[-2]["close"])
+                else:
+                    technical_indicators["previous_close"] = float(latest_indicators_row["close"])
+            except Exception:
+                technical_indicators["previous_close"] = float(latest_indicators_row["close"])
             # Fetch RSI from Alpha Vantage and add to technical_indicators
             technical_indicators["rsi"] = fetch_rsi(request.symbol, settings.ALPHA_VANTAGE_API_KEY)
             logger.info(f"Technical indicators prepared for response: {technical_indicators}")

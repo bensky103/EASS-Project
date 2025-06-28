@@ -52,13 +52,3 @@ export default tseslint.config({
   },
 })
 ```
-
-## Environment Variables
-
-Create a `.env` file in the root of the `stock-frontend` directory based on `.env.example`.
-
-```
-REACT_APP_API_URL=https://your-backend-api.com/api
-```
-
-- `REACT_APP_API_URL`: The base URL for the backend authentication API. This is used by the Axios instance for all authentication-related requests. Do not hardcode this value in your codebase.

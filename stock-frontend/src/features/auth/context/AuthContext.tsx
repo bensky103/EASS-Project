@@ -1,11 +1,14 @@
-import { createContext, useContext, useState, ReactNode } from 'react';
-import { User, AuthState, LoginRequest, RegisterRequest, AuthResponse } from '../types';
-import { login as apiLogin, register as apiRegister, setAuthTokenGetter } from '../api/authApi';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { User, AuthState } from '../types';
+import { authApi } from '../api/authApi';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 interface AuthContextProps extends AuthState {
-  login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string, confirmPassword: string) => Promise<void>;
+  login: (identifier: string, password: string, redirectTo?: string) => Promise<void>;
+  register: (userData: any, redirectTo?: string) => Promise<void>;
   logout: () => void;
+  isAuthenticated: boolean;
 }
 
 export const AuthContext = createContext<AuthContextProps | undefined>(undefined);
@@ -13,32 +16,54 @@ export const AuthContext = createContext<AuthContextProps | undefined>(undefined
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
 
-  // Provide token to Axios interceptor
-  setAuthTokenGetter(() => token);
+  const isAuthenticated = !!user && !!user.id && !!token;
 
-  const isAuthenticated = !!user && !!token;
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    const storedToken = localStorage.getItem('token');
+    if (storedUser && storedToken) {
+      setUser(JSON.parse(storedUser));
+      setToken(storedToken);
+    }
+    setIsLoading(false);
+  }, []);
 
-  const login = async (email: string, password: string) => {
+  const fetchUserInfo = async (jwt: string) => {
+    const res = await axios.get('/auth/me', {
+      headers: { Authorization: `Bearer ${jwt}` },
+    });
+    return res.data;
+  };
+
+  const login = async (identifier: string, password: string, redirectTo?: string) => {
     setIsLoading(true);
     try {
-      const data: LoginRequest = { email, password };
-      const res: AuthResponse = await apiLogin(data);
-      setUser(res.user);
-      setToken(res.token);
+      const res = await authApi.login(identifier, password);
+      setToken(res.access_token);
+      localStorage.setItem('token', res.access_token);
+      // Fetch user info (with id)
+      const userInfo = await fetchUserInfo(res.access_token);
+      setUser(userInfo);
+      localStorage.setItem('user', JSON.stringify(userInfo));
+      if (redirectTo) {
+        navigate(redirectTo, { replace: true });
+      } else {
+        navigate(`/landing/${userInfo.id}`, { replace: true });
+      }
     } finally {
       setIsLoading(false);
     }
   };
 
-  const register = async (email: string, password: string, confirmPassword: string) => {
+  const register = async (userData: any, redirectTo?: string) => {
     setIsLoading(true);
     try {
-      const data: RegisterRequest = { email, password, confirmPassword };
-      const res: AuthResponse = await apiRegister(data);
-      setUser(res.user);
-      setToken(res.token);
+      await authApi.register(userData);
+      // After successful registration, log in to get the token
+      await login(userData.email, userData.password, redirectTo);
     } finally {
       setIsLoading(false);
     }
@@ -47,6 +72,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const logout = () => {
     setUser(null);
     setToken(null);
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    navigate('/login', { replace: true });
   };
 
   return (
@@ -54,4 +82,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       {children}
     </AuthContext.Provider>
   );
-}; 
+};
+
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
+} 

@@ -1,10 +1,19 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { TrendingUp, Brain, Shield, Zap, BarChart3, Users, Star, ArrowRight } from "lucide-react"
-import { Link } from "react-router-dom"
+import { TrendingUp, Brain, Shield, Zap, BarChart3, Users, Star, ArrowRight, User as UserIcon } from "lucide-react"
+import { Link, useNavigate, useParams } from "react-router-dom"
+import { useContext, useState } from "react"
+import { AuthContext } from "@/features/auth/context/AuthContext"
+import { UserDropdown } from "@/components/user-dropdown"
 
 export default function LandingPage() {
+  const auth = useContext(AuthContext)
+  const user = auth?.user
+  const navigate = useNavigate()
+  const { userId } = useParams()
+  const isLoggedIn = user && userId && user.id === userId
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       {/* Header */}
@@ -15,23 +24,17 @@ export default function LandingPage() {
             <span className="text-xl font-bold text-gray-900">StockAI Pro</span>
           </div>
           <nav className="hidden md:flex items-center space-x-6">
-            <a href="#features" className="text-gray-600 hover:text-gray-900">
-              Features
-            </a>
-            <a href="#pricing" className="text-gray-600 hover:text-gray-900">
-              Pricing
-            </a>
-            <a href="#about" className="text-gray-600 hover:text-gray-900">
-              About
-            </a>
-            <Link to="/login">
-              <Button variant="outline" size="sm">
-                Sign In
-              </Button>
-            </Link>
-            <Link to="/register">
-              <Button size="sm">Get Started</Button>
-            </Link>
+            <a href="#features" className="text-gray-600 hover:text-gray-900">Features</a>
+            <a href="#reviews" className="text-gray-600 hover:text-gray-900">Reviews</a>
+            <a href="#about" className="text-gray-600 hover:text-gray-900">About</a>
+            {isLoggedIn ? (
+              <UserDropdown user={user} onLogout={auth.logout} />
+            ) : (
+              <>
+                <button className="btn btn-outline text-sm px-4 py-2 rounded border" onClick={() => navigate("/login")}>Sign In</button>
+                <button className="btn text-sm px-4 py-2 rounded bg-blue-600 text-white ml-2" onClick={() => navigate("/register")}>Get Started</button>
+              </>
+            )}
           </nav>
         </div>
       </header>
@@ -51,21 +54,41 @@ export default function LandingPage() {
             Harness the power of advanced Ollama AI models to analyze market trends, predict stock movements, and make
             informed investment decisions with confidence.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/register">
-              <Button size="lg" className="text-lg px-8 py-3">
-                Start Free Trial
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
-            <Button variant="outline" size="lg" className="text-lg px-8 py-3">
-              Watch Demo
-            </Button>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-8">
+            {isLoggedIn ? null : (
+              <>
+                <button className="btn text-lg px-8 py-3 bg-blue-600 text-white rounded flex items-center justify-center" onClick={() => navigate("/register")}> 
+                  <span className="flex items-center">Start Free Trial <ArrowRight className="ml-2 h-5 w-5" /></span>
+                </button>
+                <button className="btn text-lg px-8 py-3 border rounded" onClick={() => navigate("/login")}>Sign In</button>
+              </>
+            )}
           </div>
-          <p className="text-sm text-gray-500 mt-4">No credit card required • 14-day free trial • Cancel anytime</p>
+          {!isLoggedIn && (
+            <p className="text-sm text-gray-500 mt-4">No credit card required • 14-day free trial • Cancel anytime</p>
+          )}
         </div>
       </section>
-
+      {/* Make Prediction Button - Only visible when authenticated */}
+      {auth?.isAuthenticated && (
+        <div className="mb-16 flex justify-center">
+          <div className="relative w-full max-w-4xl">
+            {/* Solid filled box */}
+            <div className="bg-gradient-to-br from-blue-500 via-purple-500 to-indigo-600 rounded-3xl shadow-2xl p-12 md:p-16 lg:p-20 transform hover:scale-[1.02] transition-all duration-300">
+              <Link to="/predict">
+                <Button
+                  size="lg"
+                  className="bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white font-bold px-12 py-6 md:px-16 md:py-8 text-xl md:text-2xl lg:text-3xl rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 border-2 border-white/30 w-full"
+                >
+                  <TrendingUp className="mr-3 h-6 w-6 md:h-8 md:w-8" />
+                  GENERATE AI POWERED PREDICTION
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+      
       {/* Features Section */}
       <section id="features" className="py-20 px-4 bg-white">
         <div className="container mx-auto">
@@ -141,28 +164,8 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="py-20 px-4 bg-blue-600 text-white">
-        <div className="container mx-auto">
-          <div className="grid md:grid-cols-3 gap-8 text-center">
-            <div>
-              <div className="text-4xl font-bold mb-2">94%</div>
-              <div className="text-blue-100">Prediction Accuracy</div>
-            </div>
-            <div>
-              <div className="text-4xl font-bold mb-2">50K+</div>
-              <div className="text-blue-100">Active Traders</div>
-            </div>
-            <div>
-              <div className="text-4xl font-bold mb-2">$2.5B+</div>
-              <div className="text-blue-100">Assets Analyzed</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials */}
-      <section className="py-20 px-4 bg-gray-50">
+      {/* Reviews Section */}
+      <section id="reviews" className="py-20 px-4 bg-blue-600 text-white">
         <div className="container mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Trusted by Professional Traders</h2>
@@ -220,6 +223,16 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* About Section */}
+      <section id="about" className="py-20 px-4 bg-gray-50">
+        <div className="container mx-auto text-center max-w-4xl">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">About StockAI Pro</h2>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            [Placeholder] StockAI Pro is an advanced AI-powered platform for stock prediction and analytics. More info coming soon.
+          </p>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="py-20 px-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
         <div className="container mx-auto text-center">
@@ -229,17 +242,8 @@ export default function LandingPage() {
             decisions.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/register">
-              <Button size="lg" variant="secondary" className="text-lg px-8 py-3">
-                Start Free Trial
-              </Button>
-            </Link>
-            <Button
-              size="lg"
-              variant="outline"
-              className="text-lg px-8 py-3 border-white text-white hover:bg-white hover:text-blue-600"
-            >
-              Schedule Demo
+            <Button size="lg" variant="secondary" className="text-lg px-8 py-3" asChild>
+              <Link to="/watchlist">Start Free Trial</Link>
             </Button>
           </div>
         </div>
@@ -260,24 +264,24 @@ export default function LandingPage() {
               <h3 className="font-semibold mb-4">Product</h3>
               <ul className="space-y-2 text-gray-400">
                 <li>
-                  <a href="#" className="hover:text-white">
+                  <Link to="#" className="hover:text-white">
                     Features
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white">
+                  <Link to="#" className="hover:text-white">
                     Pricing
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white">
+                  <Link to="#" className="hover:text-white">
                     API
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white">
+                  <Link to="#" className="hover:text-white">
                     Documentation
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </div>
@@ -285,24 +289,24 @@ export default function LandingPage() {
               <h3 className="font-semibold mb-4">Company</h3>
               <ul className="space-y-2 text-gray-400">
                 <li>
-                  <a href="#" className="hover:text-white">
+                  <Link to="#" className="hover:text-white">
                     About
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white">
+                  <Link to="#" className="hover:text-white">
                     Blog
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white">
+                  <Link to="#" className="hover:text-white">
                     Careers
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white">
+                  <Link to="#" className="hover:text-white">
                     Contact
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </div>
@@ -310,24 +314,24 @@ export default function LandingPage() {
               <h3 className="font-semibold mb-4">Support</h3>
               <ul className="space-y-2 text-gray-400">
                 <li>
-                  <a href="#" className="hover:text-white">
+                  <Link to="#" className="hover:text-white">
                     Help Center
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white">
+                  <Link to="#" className="hover:text-white">
                     Privacy Policy
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white">
+                  <Link to="#" className="hover:text-white">
                     Terms of Service
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white">
+                  <Link to="#" className="hover:text-white">
                     Status
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </div>

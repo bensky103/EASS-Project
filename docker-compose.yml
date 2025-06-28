@@ -22,7 +22,7 @@ services:
     command: serve
     healthcheck:
       test: ["CMD", "sh", "/usr/local/bin/healthcheck.sh"]
-      interval: 10s
+      interval: 60s
       timeout: 5s
       retries: 3
       start_period: 20s
@@ -44,7 +44,7 @@ services:
       - .env
     healthcheck:
       test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
-      interval: 10s
+      interval: 60s
       timeout: 5s
       retries: 5
       start_period: 30s
@@ -68,7 +68,7 @@ services:
       test: ["CMD", "python3", "-c",
          "import sys, urllib.request as r; \
           sys.exit(0 if r.urlopen('http://localhost:8000/health').getcode()==200 else 1)"]
-      interval: 5s
+      interval: 60s
       timeout: 2s
       retries: 5
     restart: unless-stopped
@@ -95,7 +95,7 @@ services:
       test: ["CMD", "python3", "-c",
          "import sys, urllib.request as r; \
           sys.exit(0 if r.urlopen('http://localhost:8001/health').getcode()==200 else 1)"]
-      interval: 5s
+      interval: 60s
       timeout: 2s
       retries: 5
       start_period: 10s
@@ -126,11 +126,23 @@ services:
       test: ["CMD", "python3", "-c",
          "import sys, urllib.request as r; \
           sys.exit(0 if r.urlopen('http://localhost:8003/health').getcode()==200 else 1)"]
-      interval: 10s
+      interval: 60s
       timeout: 5s
       retries: 5
       start_period: 30s
     restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./stock-frontend
+      dockerfile: Dockerfile
+    container_name: eass_frontend
+    ports:
+      - "3000:4173"
+    depends_on:
+      - auth
+      - stock_data_fetching
+      - llm_service
 
   tests:
     build:
