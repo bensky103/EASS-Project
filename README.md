@@ -99,7 +99,7 @@ EASS-Project-main/
     }
     ```
   - **Response:** Technical indicators, volume features, fundamentals, news sentiment, etc.
-- `POST /predict` – (If implemented) Predict using features
+- `POST /predict` – Predict using features collected by /fetch
 
 ### 🤖 LLM Service
 - `GET /health` – Returns service health
