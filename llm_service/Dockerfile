@@ -20,13 +20,15 @@ COPY ../setup.py ./
 # Install the package in development mode
 RUN pip install -e .
 
-# Copy the rest of the application
-COPY llm_service /app/llm_service
-COPY llm_service/entrypoint.sh .
-RUN chmod +x entrypoint.sh
+
+# Copy ollama-entrypoint.sh from the project root to the Docker image
+COPY ../ollama-entrypoint.sh ./ollama-entrypoint.sh
+RUN chmod +x ollama-entrypoint.sh
 
 # Expose the port the app runs on
 EXPOSE 8003
 
-# Use the entrypoint script
-ENTRYPOINT ["./entrypoint.sh"] 
+# Start the FastAPI app with Uvicorn
+CMD ["uvicorn", "llm_service.main:app", "--host", "0.0.0.0", "--port", "8003"]
+
+# ENTRYPOINT removed; docker-compose.yml will set the entrypoint 

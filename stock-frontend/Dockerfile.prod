@@ -1,0 +1,9 @@
+# Stage 1: Build the app
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci
+COPY . .
+RUN npm run build && chmod -R 777 dist
+
+# No Nginx stage needed; output stays in /app/dist for the volume 

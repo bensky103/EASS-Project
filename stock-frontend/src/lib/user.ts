@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb"
-import { getDatabase } from "../mongodb"
+import { getDatabase } from "./mongodb"
 import bcrypt from "bcryptjs"
 
 export interface User {

@@ -25,7 +25,7 @@ export default defineConfig({
       '/llm_service': {
         target: 'http://10.0.0.27:8003',
         changeOrigin: true,
-        rewrite: path => path.replace(/^\/llm_service/, ''),
+        rewrite: (path) => path.replace(/^\/llm_service/, ''),
       },
       // Ollama (LLM backend)
       '/ollama': 'http://10.0.0.27:11434',

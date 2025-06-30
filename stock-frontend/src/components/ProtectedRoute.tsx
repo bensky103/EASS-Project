@@ -1,11 +1,12 @@
+import React from 'react';
 import { Navigate } from 'react-router-dom'
 
-interface Props { children: JSX.Element }
+interface Props extends React.PropsWithChildren<{}> {}
 
 export default function ProtectedRoute({ children }: Props) {
   const isLoggedIn = Boolean(localStorage.getItem('token'))
   return isLoggedIn
-    ? children
+    ? <>{children}</>
     : <Navigate to="/login" replace />
 }
 

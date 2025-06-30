@@ -121,7 +121,7 @@ export default function ProfilePage() {
     }
   }
 
-  const formatJoinDate = (dateString: string) => {
+  const formatJoinDate = (dateString: string | null | undefined) => {
     if (!dateString) return ""
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
@@ -131,8 +131,9 @@ export default function ProfilePage() {
   }
 
   const handleBack = () => {
-    if (localStorage.getItem('user')) {
-      const user = JSON.parse(localStorage.getItem('user'));
+    const userStr = localStorage.getItem('user');
+    if (userStr) {
+      const user = JSON.parse(userStr);
       navigate(`/landing/${user.id}`);
     } else {
       navigate('/landing');
@@ -215,7 +216,7 @@ export default function ProfilePage() {
                 </p>
                 <div className="flex items-center gap-2 mt-4 text-sm text-gray-600 dark:text-gray-400 transition-colors duration-300">
                   <Calendar className="w-4 h-4" />
-                  <span>Joined {formatJoinDate(String(userProfile?.joinedDate || ""))}</span>
+                  <span>Joined {formatJoinDate((userProfile?.joinedDate as string) || '')}</span>
                 </div>
               </CardContent>
             </Card>

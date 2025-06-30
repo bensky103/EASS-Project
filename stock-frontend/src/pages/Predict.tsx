@@ -45,7 +45,7 @@ export default function PredictPage() {
       // 1. Fetch real technical data from stock_data_fetching service
       let fetchedStockDataToSave = fetchedStockData
       if (!fetchedStockDataToSave) {
-        const stockDataRes = await fetch('/fetch', {
+        const stockDataRes = await fetch('/fetch/', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
